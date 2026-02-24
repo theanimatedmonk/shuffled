@@ -15,11 +15,22 @@ export const Placeholder = React.memo(function Placeholder({
 }: PlaceholderProps) {
   return (
     <div
-      className={`placeholder ${isValidTarget ? 'placeholder--valid-target' : ''}`}
+      className={`w-[var(--card-width)] h-[var(--card-height)] rounded-[var(--card-radius)] border-2 border-dashed flex items-center justify-center transition-[border-color,box-shadow,background] duration-200 ${
+        isValidTarget
+          ? 'border-[#FFC107] shadow-[0_0_12px_rgba(255,193,7,0.4)] bg-[rgba(255,193,7,0.08)] animate-[pulse_1.2s_ease-in-out_infinite]'
+          : 'border-white/20 bg-black/[0.04]'
+      }`}
       onClick={onClick}
       {...rest}
     >
-      {hint && <span className="placeholder__hint">{hint}</span>}
+      {hint && (
+        <span
+          className="text-white opacity-15"
+          style={{ fontSize: 'var(--card-center-font-size)' }}
+        >
+          {hint}
+        </span>
+      )}
     </div>
   );
 });

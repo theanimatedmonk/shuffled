@@ -86,7 +86,7 @@ function applyMove(state: GameState, from: PileId, to: PileId, cardIndex: number
   return newState;
 }
 
-function gameReducer(state: GameState, action: GameAction): GameState {
+export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case 'NEW_GAME':
       return dealGame();

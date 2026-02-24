@@ -24,7 +24,7 @@ export const FoundationPile = React.memo(function FoundationPile({
 
   if (cards.length === 0) {
     return (
-      <div className="pile" data-pile-id={pileId}>
+      <div className="relative w-[var(--card-width)] h-[var(--card-height)]" data-pile-id={pileId}>
         <Placeholder
           hint={suitHint}
           isValidTarget={isValidTarget}
@@ -38,10 +38,10 @@ export const FoundationPile = React.memo(function FoundationPile({
   const topCard = cards[topIndex];
 
   return (
-    <div className="pile" data-pile-id={pileId}>
+    <div className="relative w-[var(--card-width)] h-[var(--card-height)]" data-pile-id={pileId}>
       <CardComponent
         card={topCard}
-        className="card-container--static"
+        isStatic
         isValidTarget={isValidTarget}
         onClick={() => onCardClick(pileId, topIndex)}
       />

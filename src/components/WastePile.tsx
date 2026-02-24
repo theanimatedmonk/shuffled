@@ -20,17 +20,17 @@ export const WastePile = React.memo(function WastePile({
   onDoubleClick,
 }: WastePileProps) {
   if (cards.length === 0) {
-    return <div className="waste-pile" data-pile-id="waste" />;
+    return <div className="relative w-[var(--card-width)] h-[var(--card-height)]" data-pile-id="waste" />;
   }
 
   const topIndex = cards.length - 1;
   const topCard = cards[topIndex];
 
   return (
-    <div className="waste-pile" data-pile-id="waste">
+    <div className="relative w-[var(--card-width)] h-[var(--card-height)]" data-pile-id="waste">
       <CardComponent
         card={topCard}
-        className="card-container--static"
+        isStatic
         isSelected={selectedCardIndex === topIndex}
         isValidTarget={isValidTarget}
         onPointerDown={(e) => onPointerDown(e, 'waste', topIndex)}

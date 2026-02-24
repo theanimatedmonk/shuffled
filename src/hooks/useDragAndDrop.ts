@@ -24,8 +24,12 @@ export function useDragAndDrop(
   const [dragCards, setDragCards] = useState<Card[]>([]);
   const [draggingCardIds, setDraggingCardIds] = useState<Set<string>>(new Set());
   const [validTargets, setValidTargets] = useState<PileId[]>([]);
+  const [initialPos, setInitialPos] = useState<{ x: number; y: number } | null>(null);
   const dragActivated = useRef(false);
   const pendingDrag = useRef<DragInfo | null>(null);
+
+  const pointerIdRef = useRef<number | null>(null);
+  const pointerTargetRef = useRef<HTMLElement | null>(null);
 
   const handlePointerDown = useCallback(
     (e: React.PointerEvent, pileId: PileId, cardIndex: number) => {
@@ -35,7 +39,8 @@ export function useDragAndDrop(
       if (!pile[cardIndex].faceUp) return;
 
       const cards = pile.slice(cardIndex);
-      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      const el = e.currentTarget as HTMLElement;
+      const rect = el.getBoundingClientRect();
 
       pendingDrag.current = {
         sourcePileId: pileId,
@@ -47,6 +52,11 @@ export function useDragAndDrop(
         startY: e.clientY,
       };
       dragActivated.current = false;
+
+      // Capture pointer so mobile touch events keep firing
+      pointerIdRef.current = e.pointerId;
+      pointerTargetRef.current = el;
+      el.setPointerCapture(e.pointerId);
     },
     [state]
   );
@@ -59,6 +69,9 @@ export function useDragAndDrop(
         const dy = e.clientY - pendingDrag.current.startY;
 
         if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) {
+          // Prevent browser scroll/pan once drag is confirmed
+          e.preventDefault();
+
           // Activate the drag
           dragActivated.current = true;
           dragRef.current = pendingDrag.current;
@@ -71,12 +84,17 @@ export function useDragAndDrop(
           setValidTargets(targets);
           setDragCards(dragRef.current.cards);
           setDraggingCardIds(new Set(dragRef.current.cards.map(c => c.id)));
+          setInitialPos({
+            x: e.clientX - dragRef.current.offsetX,
+            y: e.clientY - dragRef.current.offsetY,
+          });
           setIsDragging(true);
         }
       }
 
       // Update overlay position during active drag
       if (dragActivated.current && dragRef.current && overlayRef.current) {
+        e.preventDefault();
         const x = e.clientX - dragRef.current.offsetX;
         const y = e.clientY - dragRef.current.offsetY;
         overlayRef.current.style.transform = `translate(${x}px, ${y}px)`;
@@ -102,6 +120,17 @@ export function useDragAndDrop(
         }
       }
 
+      // Release pointer capture
+      if (pointerIdRef.current !== null && pointerTargetRef.current) {
+        try {
+          pointerTargetRef.current.releasePointerCapture(pointerIdRef.current);
+        } catch {
+          // Already released
+        }
+      }
+      pointerIdRef.current = null;
+      pointerTargetRef.current = null;
+
       // Reset all drag state
       dragRef.current = null;
       pendingDrag.current = null;
@@ -110,6 +139,7 @@ export function useDragAndDrop(
       setDragCards([]);
       setDraggingCardIds(new Set());
       setValidTargets([]);
+      setInitialPos(null);
     };
 
     document.addEventListener('pointermove', handleMove);
@@ -129,6 +159,7 @@ export function useDragAndDrop(
     draggingCardIds,
     validTargets,
     overlayRef,
+    initialPos,
     handlePointerDown,
   };
 }

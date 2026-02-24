@@ -24,6 +24,7 @@ export function Board() {
     draggingCardIds,
     validTargets,
     overlayRef,
+    initialPos,
     handlePointerDown,
   } = useDragAndDrop(state, moveCards);
 
@@ -82,7 +83,7 @@ export function Board() {
   const validTargetSet = new Set(validTargets);
 
   return (
-    <div className="board-wrapper">
+    <div className="flex-1 flex flex-col w-full overflow-y-auto">
       <TopBar
         moves={state.moves}
         score={state.score}
@@ -91,7 +92,7 @@ export function Board() {
         onUndo={undo}
         onAutoComplete={startAutoComplete}
       />
-      <div className="board">
+      <div className="board-grid mx-auto w-full justify-center">
         {/* Top row */}
         <StockPile cards={state.stock} onDraw={drawStock} />
         <WastePile
@@ -106,7 +107,7 @@ export function Board() {
           onCardClick={handleCardClick}
           onDoubleClick={handleDoubleClick}
         />
-        <div className="board__spacer" />
+        <div style={{ width: 'var(--card-width)' }} />
         {state.foundations.map((pile, i) => (
           <FoundationPile
             key={i}
@@ -137,30 +138,56 @@ export function Board() {
 
       {/* Drag overlay */}
       {isDragging && (
-        <div className="drag-overlay" ref={overlayRef}>
-          {dragCards.map((card, i) => (
-            <div
-              key={card.id}
-              className="drag-overlay-card"
-              style={{ top: i * 22, left: 0 }}
-            >
-              <div className={`card card--face-up card--${card.color === 'red' ? 'red' : 'black'}`}>
-                <div className="card__front">
-                  <div className="card__corner card__corner--top">
-                    <span className="card__rank">{card.rank}</span>
-                    <span className="card__suit">{SUIT_SYMBOLS[card.suit]}</span>
-                  </div>
-                  <div className="card__center">
-                    <span className="card__center-suit">{SUIT_SYMBOLS[card.suit]}</span>
-                  </div>
-                  <div className="card__corner card__corner--bottom">
-                    <span className="card__rank">{card.rank}</span>
-                    <span className="card__suit">{SUIT_SYMBOLS[card.suit]}</span>
+        <div
+          className="fixed top-0 left-0 pointer-events-none z-[10000]"
+          ref={overlayRef}
+          style={initialPos ? { transform: `translate(${initialPos.x}px, ${initialPos.y}px)` } : undefined}
+        >
+          {dragCards.map((card, i) => {
+            const textColor = card.color === 'red' ? 'text-[#d32f2f]' : 'text-[#212121]';
+            return (
+              <div
+                key={card.id}
+                className="absolute w-[var(--card-width)] h-[var(--card-height)] card-3d-container pointer-events-none"
+                style={{ top: i * 22, left: 0 }}
+              >
+                <div className="w-full h-full relative card-3d card-3d--face-up cursor-grabbing">
+                  <div
+                    className="absolute inset-0 flex flex-col justify-between overflow-hidden border border-[#d0d0d0] card-face card-front-bg shadow-[0_14px_28px_rgba(0,0,0,0.25),0_10px_10px_rgba(0,0,0,0.22)]"
+                    style={{
+                      borderRadius: 'var(--card-radius)',
+                      padding: 'clamp(2px, 0.5vw, 5px)',
+                    }}
+                  >
+                    <div className={`flex flex-col items-center leading-none self-start ${textColor}`}>
+                      <span className="font-bold leading-[1.1]" style={{ fontSize: 'var(--card-font-size)' }}>
+                        {card.rank}
+                      </span>
+                      <span className="leading-none" style={{ fontSize: 'calc(var(--card-font-size) * 0.8)' }}>
+                        {SUIT_SYMBOLS[card.suit]}
+                      </span>
+                    </div>
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                      <span
+                        className={`leading-none opacity-85 ${textColor}`}
+                        style={{ fontSize: 'var(--card-center-font-size)' }}
+                      >
+                        {SUIT_SYMBOLS[card.suit]}
+                      </span>
+                    </div>
+                    <div className={`flex flex-col items-center leading-none self-end rotate-180 ${textColor}`}>
+                      <span className="font-bold leading-[1.1]" style={{ fontSize: 'var(--card-font-size)' }}>
+                        {card.rank}
+                      </span>
+                      <span className="leading-none" style={{ fontSize: 'calc(var(--card-font-size) * 0.8)' }}>
+                        {SUIT_SYMBOLS[card.suit]}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

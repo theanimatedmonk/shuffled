@@ -30,7 +30,7 @@ export const TableauPile = React.memo(function TableauPile({
 
   if (cards.length === 0) {
     return (
-      <div className="tableau-pile" data-pile-id={pileId} style={{ height: 'var(--card-height)' }}>
+      <div className="relative w-[var(--card-width)]" data-pile-id={pileId} style={{ height: 'var(--card-height)' }}>
         <Placeholder
           hint="K"
           isValidTarget={isValidTarget}
@@ -59,7 +59,7 @@ export const TableauPile = React.memo(function TableauPile({
 
   return (
     <div
-      className="tableau-pile"
+      className="relative w-[var(--card-width)]"
       data-pile-id={pileId}
       style={{ height: totalHeight }}
     >
