@@ -1,11 +1,14 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import type { PileId } from '../types';
 import { useGameState } from '../hooks/useGameState';
 import { useDragAndDrop } from '../hooks/useDragAndDrop';
+import { useSettings } from '../contexts/SettingsContext';
+import { useSound } from '../hooks/useSound';
 import {
   canAutoComplete,
   getAutoCompleteMove,
   findAutoMoveToFoundation,
+  findSafeAutoMoves,
 } from '../gameLogic';
 import { SUIT_SYMBOLS } from '../constants';
 import { TopBar } from './TopBar';
@@ -14,12 +17,25 @@ import { WastePile } from './WastePile';
 import { FoundationPile } from './FoundationPile';
 import { TableauPile } from './TableauPile';
 import { WinOverlay } from './WinOverlay';
+import { SettingsModal } from './SettingsModal';
 
 const DOUBLE_TAP_MS = 400;
 
 export function Board() {
   const { state, newGame, drawStock, moveCards, undo, selectCard } =
     useGameState();
+  const { settings } = useSettings();
+  const { play } = useSound();
+
+  // Wrap moveCards to play sound on drag-drop
+  const moveCardsWithSound = useCallback(
+    (from: PileId, to: PileId, cardIndex: number) => {
+      moveCards(from, to, cardIndex);
+      play('cardPlace');
+    },
+    [moveCards, play]
+  );
+
   const {
     isDragging,
     dragCards,
@@ -28,8 +44,9 @@ export function Board() {
     overlayRef,
     initialPos,
     handlePointerDown,
-  } = useDragAndDrop(state, moveCards);
+  } = useDragAndDrop(state, moveCardsWithSound);
 
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const showAutoComplete = canAutoComplete(state) && !state.hasWon;
 
   // Custom double-tap detector — browser dblclick is unreliable with touch-none
@@ -46,6 +63,7 @@ export function Board() {
         const target = findAutoMoveToFoundation(state, pileId, cardIndex);
         if (target) {
           moveCards(pileId, target, cardIndex);
+          play('cardPlace');
           return;
         }
       }
@@ -53,18 +71,22 @@ export function Board() {
       lastTap.current = { pileId, cardIndex, time: now };
       selectCard(pileId, cardIndex);
     },
-    [selectCard, state, moveCards]
+    [selectCard, state, moveCards, play]
   );
 
   const handlePileClick = useCallback(
     (pileId: PileId) => {
       if (state.selectedCard) {
-        // Try to move selected card to this pile
         selectCard(pileId, 0);
       }
     },
     [state.selectedCard, selectCard]
   );
+
+  const handleDrawStock = useCallback(() => {
+    drawStock(settings.drawMode);
+    play('stockClick');
+  }, [drawStock, settings.drawMode, play]);
 
   // Auto-complete via repeated effect
   const [autoCompleting, setAutoCompleting] = React.useState(false);
@@ -84,10 +106,37 @@ export function Board() {
 
     const timeout = setTimeout(() => {
       moveCards(move.from, move.to, move.cardIndex);
+      play('cardPlace');
     }, 120);
 
     return () => clearTimeout(timeout);
-  }, [autoCompleting, state, moveCards]);
+  }, [autoCompleting, state, moveCards, play]);
+
+  // Auto-move safe cards to foundation
+  useEffect(() => {
+    if (!settings.autoMoveToFoundation) return;
+    if (state.hasWon || autoCompleting) return;
+
+    const safeMoves = findSafeAutoMoves(state);
+    if (safeMoves.length === 0) return;
+
+    const timeout = setTimeout(() => {
+      const move = safeMoves[0];
+      moveCards(move.from, move.to, move.cardIndex);
+      play('cardPlace');
+    }, 200);
+
+    return () => clearTimeout(timeout);
+  }, [state, settings.autoMoveToFoundation, autoCompleting, moveCards, play]);
+
+  // Win celebration sound
+  const prevWon = useRef(false);
+  useEffect(() => {
+    if (state.hasWon && !prevWon.current) {
+      play('winCelebration');
+    }
+    prevWon.current = state.hasWon;
+  }, [state.hasWon, play]);
 
   const validTargetSet = new Set(validTargets);
 
@@ -100,12 +149,14 @@ export function Board() {
         onNewGame={newGame}
         onUndo={undo}
         onAutoComplete={startAutoComplete}
+        onOpenSettings={() => setSettingsOpen(true)}
       />
       <div className="board-grid mx-auto w-full justify-center">
         {/* Top row */}
-        <StockPile cards={state.stock} onDraw={drawStock} />
+        <StockPile cards={state.stock} onDraw={handleDrawStock} />
         <WastePile
           cards={state.waste}
+          drawMode={settings.drawMode}
           selectedCardIndex={
             state.selectedCard?.pileId === 'waste'
               ? state.selectedCard.cardIndex
@@ -200,6 +251,13 @@ export function Board() {
 
       {state.hasWon && (
         <WinOverlay moves={state.moves} score={state.score} onNewGame={newGame} />
+      )}
+
+      {settingsOpen && (
+        <SettingsModal
+          onClose={() => setSettingsOpen(false)}
+          onNewGame={() => { newGame(); setSettingsOpen(false); }}
+        />
       )}
     </div>
   );

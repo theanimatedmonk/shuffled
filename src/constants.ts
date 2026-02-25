@@ -1,4 +1,4 @@
-import type { Suit, Rank, Color } from './types';
+import type { Suit, Rank, Color, Settings, CardBackTheme } from './types';
 
 export const SUITS: Suit[] = ['hearts', 'diamonds', 'clubs', 'spades'];
 export const RANKS: Rank[] = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
@@ -23,3 +23,18 @@ export const SUIT_COLORS: Record<Suit, Color> = {
 };
 
 export const FOUNDATION_SUITS: Suit[] = ['hearts', 'diamonds', 'clubs', 'spades'];
+
+export const DEFAULT_SETTINGS: Settings = {
+  drawMode: 1,
+  cardBackTheme: 'blue',
+  soundEnabled: true,
+  autoMoveToFoundation: false,
+};
+
+export const CARD_BACK_THEMES: Record<CardBackTheme, { color1: string; color2: string; border: string }> = {
+  blue:   { color1: '#1565C0', color2: '#1976D2', border: '#1565C0' },
+  red:    { color1: '#C62828', color2: '#E53935', border: '#C62828' },
+  green:  { color1: '#2E7D32', color2: '#43A047', border: '#2E7D32' },
+  purple: { color1: '#6A1B9A', color2: '#8E24AA', border: '#6A1B9A' },
+  gold:   { color1: '#E65100', color2: '#F57C00', border: '#E65100' },
+};

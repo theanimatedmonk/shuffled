@@ -90,7 +90,7 @@ export const CardComponent = React.memo(function CardComponent({
           style={{ borderRadius: 'var(--card-radius)' }}
         >
           <div
-            className="w-full h-full card-back-pattern border-3 border-white shadow-[inset_0_0_0_2px_#1565C0]"
+            className="w-full h-full card-back-pattern border-3 border-white shadow-[inset_0_0_0_2px_var(--card-back-border)]"
             style={{ borderRadius: 'var(--card-radius)' }}
           />
         </div>

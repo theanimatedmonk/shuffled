@@ -44,8 +44,19 @@ export interface HistoryEntry {
 
 export type GameAction =
   | { type: 'NEW_GAME' }
-  | { type: 'DRAW_STOCK' }
+  | { type: 'DRAW_STOCK'; count?: number }
   | { type: 'MOVE_CARDS'; from: PileId; to: PileId; cardIndex: number }
   | { type: 'UNDO' }
   | { type: 'SELECT_CARD'; pileId: PileId; cardIndex: number }
   | { type: 'CLEAR_SELECTION' };
+
+// Settings types
+export type DrawMode = 1 | 3;
+export type CardBackTheme = 'blue' | 'red' | 'green' | 'purple' | 'gold';
+
+export interface Settings {
+  drawMode: DrawMode;
+  cardBackTheme: CardBackTheme;
+  soundEnabled: boolean;
+  autoMoveToFoundation: boolean;
+}

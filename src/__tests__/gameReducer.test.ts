@@ -80,6 +80,37 @@ describe('DRAW_STOCK', () => {
     const next = gameReducer(state, { type: 'DRAW_STOCK' });
     expect(next).toBe(state); // Same reference = no change
   });
+
+  it('draws 3 cards when count=3', () => {
+    const state = emptyState({
+      stock: [
+        makeCard('A', 'hearts', false),
+        makeCard('3', 'spades', false),
+        makeCard('5', 'diamonds', false),
+        makeCard('7', 'clubs', false),
+      ],
+      waste: [],
+    });
+    const next = gameReducer(state, { type: 'DRAW_STOCK', count: 3 });
+    expect(next.stock).toHaveLength(1);
+    expect(next.waste).toHaveLength(3);
+    // All drawn cards should be face up
+    for (const card of next.waste) {
+      expect(card.faceUp).toBe(true);
+    }
+    // Top of waste should be the last drawn card (was top of stock)
+    expect(next.waste[2].rank).toBe('7');
+  });
+
+  it('draws remaining cards when stock has fewer than count', () => {
+    const state = emptyState({
+      stock: [makeCard('A', 'hearts', false), makeCard('3', 'spades', false)],
+      waste: [],
+    });
+    const next = gameReducer(state, { type: 'DRAW_STOCK', count: 3 });
+    expect(next.stock).toHaveLength(0);
+    expect(next.waste).toHaveLength(2);
+  });
 });
 
 // ── MOVE_CARDS ────────────────────────────────────────────────

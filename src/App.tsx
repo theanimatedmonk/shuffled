@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Board } from './components/Board';
+import { SettingsProvider } from './contexts/SettingsContext';
 
 function App() {
   useEffect(() => {
@@ -17,7 +18,11 @@ function App() {
     };
   }, []);
 
-  return <Board />;
+  return (
+    <SettingsProvider>
+      <Board />
+    </SettingsProvider>
+  );
 }
 
 export default App;

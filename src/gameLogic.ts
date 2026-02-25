@@ -237,3 +237,62 @@ export function findAutoMoveToFoundation(
   }
   return null;
 }
+
+/**
+ * Find cards that can safely be auto-moved to foundation.
+ * A card is "safe" to auto-move if both opposite-color cards of rank-1
+ * are already on their foundations. Aces and 2s are always safe.
+ */
+export function findSafeAutoMoves(
+  state: GameState
+): { from: PileId; to: PileId; cardIndex: number }[] {
+  const moves: { from: PileId; to: PileId; cardIndex: number }[] = [];
+
+  // Get min foundation rank for each color
+  const foundationMinRank = (color: 'red' | 'black'): number => {
+    let minRank = 14; // higher than K=13
+    for (let f = 0; f < 4; f++) {
+      const suit = FOUNDATION_SUITS[f];
+      const suitColor = SUIT_COLORS[suit];
+      if (suitColor === color) {
+        const pile = state.foundations[f];
+        const topRank = pile.length > 0 ? getRankValue(pile[pile.length - 1].rank) : 0;
+        minRank = Math.min(minRank, topRank);
+      }
+    }
+    return minRank;
+  };
+
+  const isSafeToMove = (card: Card): boolean => {
+    const cardRankVal = getRankValue(card.rank);
+    // Aces and 2s are always safe
+    if (cardRankVal <= 2) return true;
+    // Safe if both opposite-color cards of rank-1 are on foundations
+    const oppositeColor = card.color === 'red' ? 'black' : 'red';
+    const oppositeMinRank = foundationMinRank(oppositeColor);
+    return oppositeMinRank >= cardRankVal - 1;
+  };
+
+  // Check waste top
+  if (state.waste.length > 0) {
+    const topCard = state.waste[state.waste.length - 1];
+    const target = findAutoMoveToFoundation(state, 'waste', state.waste.length - 1);
+    if (target && isSafeToMove(topCard)) {
+      moves.push({ from: 'waste', to: target, cardIndex: state.waste.length - 1 });
+    }
+  }
+
+  // Check tableau pile tops
+  for (let t = 0; t < 7; t++) {
+    const pile = state.tableau[t];
+    if (pile.length === 0) continue;
+    const topCard = pile[pile.length - 1];
+    const fromId: PileId = `tableau-${t as 0 | 1 | 2 | 3 | 4 | 5 | 6}`;
+    const target = findAutoMoveToFoundation(state, fromId, pile.length - 1);
+    if (target && isSafeToMove(topCard)) {
+      moves.push({ from: fromId, to: target, cardIndex: pile.length - 1 });
+    }
+  }
+
+  return moves;
+}

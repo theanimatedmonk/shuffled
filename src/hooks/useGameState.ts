@@ -94,14 +94,18 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return dealGame();
 
     case 'DRAW_STOCK': {
+      const count = action.count ?? 1;
       const history = [...state.history, saveHistory(state)];
 
       if (state.stock.length > 0) {
         const newStock = cloneCards(state.stock);
         const newWaste = cloneCards(state.waste);
-        const card = newStock.pop()!;
-        card.faceUp = true;
-        newWaste.push(card);
+        const drawCount = Math.min(count, newStock.length);
+        for (let i = 0; i < drawCount; i++) {
+          const card = newStock.pop()!;
+          card.faceUp = true;
+          newWaste.push(card);
+        }
         return {
           ...state,
           stock: newStock,
@@ -222,7 +226,10 @@ export function useGameState() {
   }, [state]);
 
   const newGame = useCallback(() => dispatch({ type: 'NEW_GAME' }), []);
-  const drawStock = useCallback(() => dispatch({ type: 'DRAW_STOCK' }), []);
+  const drawStock = useCallback(
+    (count: number = 1) => dispatch({ type: 'DRAW_STOCK', count }),
+    []
+  );
   const moveCards = useCallback(
     (from: PileId, to: PileId, cardIndex: number) =>
       dispatch({ type: 'MOVE_CARDS', from, to, cardIndex }),

@@ -15,6 +15,11 @@
   --card-font-size: clamp(14px, 3.5vw, 20px);
   --card-center-font-size: clamp(26px, 7vw, 40px);
   --board-padding: clamp(4px, 1.5vw, 16px);
+
+  /* Card back theme (set dynamically by SettingsContext) */
+  --card-back-color1: #1565C0;
+  --card-back-color2: #1976D2;
+  --card-back-border: #1565C0;
 }
 
 /* Small mobile screens — compress tableau to reduce scrolling */
@@ -109,7 +114,7 @@ body::before {
 }
 
 .card-back-pattern {
-  background: linear-gradient(135deg, #1565C0 25%, #1976D2 25%, #1976D2 50%, #1565C0 50%, #1565C0 75%, #1976D2 75%);
+  background: linear-gradient(135deg, var(--card-back-color1) 25%, var(--card-back-color2) 25%, var(--card-back-color2) 50%, var(--card-back-color1) 50%, var(--card-back-color1) 75%, var(--card-back-color2) 75%);
   background-size: 10px 10px;
 }
 

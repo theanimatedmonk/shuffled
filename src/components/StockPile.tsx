@@ -28,12 +28,12 @@ export const StockPile = React.memo(function StockPile({ cards, onDraw }: StockP
     >
       {cards.length > 2 && (
         <div
-          className="stock-depth absolute w-[var(--card-width)] h-[var(--card-height)] rounded-[var(--card-radius)] card-back-pattern border-3 border-white shadow-[inset_0_0_0_2px_#1565C0,0_1px_3px_rgba(0,0,0,0.12)]"
+          className="stock-depth absolute w-[var(--card-width)] h-[var(--card-height)] rounded-[var(--card-radius)] card-back-pattern border-3 border-white shadow-[inset_0_0_0_2px_var(--card-back-border),0_1px_3px_rgba(0,0,0,0.12)]"
         />
       )}
       {cards.length > 1 && (
         <div
-          className="stock-depth absolute w-[var(--card-width)] h-[var(--card-height)] rounded-[var(--card-radius)] card-back-pattern border-3 border-white shadow-[inset_0_0_0_2px_#1565C0,0_1px_3px_rgba(0,0,0,0.12)]"
+          className="stock-depth absolute w-[var(--card-width)] h-[var(--card-height)] rounded-[var(--card-radius)] card-back-pattern border-3 border-white shadow-[inset_0_0_0_2px_var(--card-back-border),0_1px_3px_rgba(0,0,0,0.12)]"
         />
       )}
       <div className="absolute top-0 left-0">
@@ -51,7 +51,7 @@ export const StockPile = React.memo(function StockPile({ cards, onDraw }: StockP
               style={{ borderRadius: 'var(--card-radius)' }}
             >
               <div
-                className="w-full h-full card-back-pattern border-3 border-white shadow-[inset_0_0_0_2px_#1565C0]"
+                className="w-full h-full card-back-pattern border-3 border-white shadow-[inset_0_0_0_2px_var(--card-back-border)]"
                 style={{ borderRadius: 'var(--card-radius)' }}
               />
             </div>
