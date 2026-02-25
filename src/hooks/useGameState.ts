@@ -1,6 +1,8 @@
-import { useReducer, useCallback } from 'react';
+import { useReducer, useCallback, useEffect } from 'react';
 import type { GameState, GameAction, PileId, HistoryEntry, Card } from '../types';
 import { dealGame, isValidMove, checkWin, calculateScore } from '../gameLogic';
+
+const STORAGE_KEY = 'solitaire-game-state';
 
 function cloneCards(cards: Card[]): Card[] {
   return cards.map(c => ({ ...c }));
@@ -178,8 +180,46 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
   }
 }
 
+function loadSavedState(): GameState | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as GameState;
+    // Basic validation: must have the expected shape
+    if (
+      !parsed.stock ||
+      !parsed.foundations ||
+      !parsed.tableau ||
+      parsed.foundations.length !== 4 ||
+      parsed.tableau.length !== 7
+    ) {
+      return null;
+    }
+    // Ensure transient UI state is clean on restore
+    parsed.selectedCard = null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function saveState(state: GameState): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    // Storage full or unavailable — silently ignore
+  }
+}
+
 export function useGameState() {
-  const [state, dispatch] = useReducer(gameReducer, null, () => dealGame());
+  const [state, dispatch] = useReducer(gameReducer, null, () => {
+    return loadSavedState() ?? dealGame();
+  });
+
+  // Persist state to localStorage on every change
+  useEffect(() => {
+    saveState(state);
+  }, [state]);
 
   const newGame = useCallback(() => dispatch({ type: 'NEW_GAME' }), []);
   const drawStock = useCallback(() => dispatch({ type: 'DRAW_STOCK' }), []);

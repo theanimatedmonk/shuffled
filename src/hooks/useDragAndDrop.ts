@@ -53,10 +53,10 @@ export function useDragAndDrop(
       };
       dragActivated.current = false;
 
-      // Capture pointer so mobile touch events keep firing
+      // Store pointer info — capture is deferred until drag threshold is crossed
+      // (capturing immediately breaks click/dblclick event sequence)
       pointerIdRef.current = e.pointerId;
       pointerTargetRef.current = el;
-      el.setPointerCapture(e.pointerId);
     },
     [state]
   );
@@ -71,6 +71,15 @@ export function useDragAndDrop(
         if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) {
           // Prevent browser scroll/pan once drag is confirmed
           e.preventDefault();
+
+          // Now capture the pointer so mobile touch events keep firing during drag
+          if (pointerIdRef.current !== null && pointerTargetRef.current) {
+            try {
+              pointerTargetRef.current.setPointerCapture(pointerIdRef.current);
+            } catch {
+              // Element may have been removed
+            }
+          }
 
           // Activate the drag
           dragActivated.current = true;

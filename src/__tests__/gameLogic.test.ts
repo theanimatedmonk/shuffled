@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import type { Card, GameState, Suit, Rank, PileId } from '../types';
+import type { Card, GameState, Suit, Rank } from '../types';
 import {
   dealGame,
   isValidMove,
@@ -116,11 +116,20 @@ describe('isValidMove', () => {
   });
 
   // Foundation moves
-  it('allows Ace to empty foundation', () => {
+  it('allows Ace to its designated foundation', () => {
     const state = emptyState({
       tableau: [[makeCard('A', 'hearts')], [], [], [], [], [], []],
     });
+    // foundation-0 is hearts
     expect(isValidMove(state, 'tableau-0', 'foundation-0', 0)).toBe(true);
+  });
+
+  it('rejects Ace to wrong foundation slot', () => {
+    const state = emptyState({
+      tableau: [[makeCard('A', 'hearts')], [], [], [], [], [], []],
+    });
+    // foundation-1 is diamonds, not hearts
+    expect(isValidMove(state, 'tableau-0', 'foundation-1', 0)).toBe(false);
   });
 
   it('allows sequential same-suit to foundation', () => {
@@ -216,7 +225,7 @@ describe('isValidMove', () => {
 
 describe('checkWin', () => {
   it('returns true when all foundations have 13 cards', () => {
-    const fullFoundation = Array.from({ length: 13 }, (_, i) => makeCard('A', 'hearts'));
+    const fullFoundation = Array.from({ length: 13 }, () => makeCard('A', 'hearts'));
     const state = emptyState({
       foundations: [fullFoundation, [...fullFoundation], [...fullFoundation], [...fullFoundation]],
     });
@@ -308,8 +317,13 @@ describe('getValidDropTargets', () => {
       tableau: [[], [makeCard('2', 'spades')], [], [], [], [], []],
     });
     const targets = getValidDropTargets(state, 'waste', 0);
-    // Ace can go to any empty foundation, but not to tableau (needs K for empty, or wrong rank for 2)
-    expect(targets.some(t => t.startsWith('foundation-'))).toBe(true);
+    // Ace of hearts goes to foundation-0 (its designated slot) and tableau-1 (under black 2)
+    expect(targets).toContain('foundation-0');
+    expect(targets).toHaveLength(2);
+    // Should NOT be allowed to go to other empty foundations
+    expect(targets).not.toContain('foundation-1');
+    expect(targets).not.toContain('foundation-2');
+    expect(targets).not.toContain('foundation-3');
   });
 
   it('returns empty array when no valid moves exist', () => {

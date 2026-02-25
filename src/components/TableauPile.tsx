@@ -11,7 +11,6 @@ interface TableauPileProps {
   draggingCards: Set<string>;
   onPointerDown: (e: React.PointerEvent, pileId: PileId, cardIndex: number) => void;
   onCardClick: (pileId: PileId, cardIndex: number) => void;
-  onDoubleClick: (pileId: PileId, cardIndex: number) => void;
   onPileClick: (pileId: PileId) => void;
 }
 
@@ -23,7 +22,6 @@ export const TableauPile = React.memo(function TableauPile({
   draggingCards,
   onPointerDown,
   onCardClick,
-  onDoubleClick,
   onPileClick,
 }: TableauPileProps) {
   const pileId: PileId = `tableau-${index as 0 | 1 | 2 | 3 | 4 | 5 | 6}`;
@@ -77,7 +75,6 @@ export const TableauPile = React.memo(function TableauPile({
           isValidTarget={i === cards.length - 1 && isValidTarget}
           onPointerDown={(e) => onPointerDown(e, pileId, i)}
           onClick={() => onCardClick(pileId, i)}
-          onDoubleClick={() => onDoubleClick(pileId, i)}
         />
       ))}
     </div>

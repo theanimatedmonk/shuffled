@@ -8,7 +8,6 @@ interface WastePileProps {
   isValidTarget: boolean;
   onPointerDown: (e: React.PointerEvent, pileId: PileId, cardIndex: number) => void;
   onCardClick: (pileId: PileId, cardIndex: number) => void;
-  onDoubleClick: (pileId: PileId, cardIndex: number) => void;
 }
 
 export const WastePile = React.memo(function WastePile({
@@ -17,7 +16,6 @@ export const WastePile = React.memo(function WastePile({
   isValidTarget,
   onPointerDown,
   onCardClick,
-  onDoubleClick,
 }: WastePileProps) {
   if (cards.length === 0) {
     return <div className="relative w-[var(--card-width)] h-[var(--card-height)]" data-pile-id="waste" />;
@@ -35,7 +33,6 @@ export const WastePile = React.memo(function WastePile({
         isValidTarget={isValidTarget}
         onPointerDown={(e) => onPointerDown(e, 'waste', topIndex)}
         onClick={() => onCardClick('waste', topIndex)}
-        onDoubleClick={() => onDoubleClick('waste', topIndex)}
       />
     </div>
   );

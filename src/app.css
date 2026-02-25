@@ -6,17 +6,26 @@
 
 /* --- CSS Custom Properties (read by JS at runtime via getCssVarPx()) --- */
 :root {
-  --card-width: clamp(44px, 11vw, 80px);
+  --card-width: clamp(48px, 12.5vw, 80px);
   --card-height: calc(var(--card-width) * 1.4);
   --card-radius: calc(var(--card-width) * 0.1);
-  --card-gap: clamp(4px, 1.5vw, 14px);
+  --card-gap: clamp(3px, 1vw, 14px);
   --tableau-offset: clamp(16px, 3.5vw, 28px);
   --tableau-offset-down: clamp(5px, 1.2vw, 10px);
-  --card-font-size: clamp(10px, 2.5vw, 16px);
-  --card-center-font-size: clamp(18px, 5vw, 32px);
-  --board-padding: clamp(8px, 2vw, 16px);
+  --card-font-size: clamp(14px, 3.5vw, 20px);
+  --card-center-font-size: clamp(26px, 7vw, 40px);
+  --board-padding: clamp(4px, 1.5vw, 16px);
 }
 
+/* Small mobile screens — compress tableau to reduce scrolling */
+@media (max-height: 700px) and (max-width: 500px) {
+  :root {
+    --tableau-offset: clamp(14px, 3vw, 22px);
+    --tableau-offset-down: clamp(3px, 0.8vw, 6px);
+  }
+}
+
+/* Landscape on small devices */
 @media (orientation: landscape) and (max-height: 500px) {
   :root {
     --tableau-offset: clamp(12px, 2vw, 18px);
@@ -40,6 +49,12 @@ body {
   -webkit-user-select: none;
   touch-action: manipulation;
   overflow-x: hidden;
+  /* Safe area insets for notched devices (iPhone X+, etc.) */
+  padding:
+    env(safe-area-inset-top)
+    env(safe-area-inset-right)
+    env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
 }
 
 body::before {

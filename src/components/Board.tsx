@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import type { PileId } from '../types';
 import { useGameState } from '../hooks/useGameState';
 import { useDragAndDrop } from '../hooks/useDragAndDrop';
@@ -15,6 +15,8 @@ import { FoundationPile } from './FoundationPile';
 import { TableauPile } from './TableauPile';
 import { WinOverlay } from './WinOverlay';
 
+const DOUBLE_TAP_MS = 400;
+
 export function Board() {
   const { state, newGame, drawStock, moveCards, undo, selectCard } =
     useGameState();
@@ -30,21 +32,28 @@ export function Board() {
 
   const showAutoComplete = canAutoComplete(state) && !state.hasWon;
 
+  // Custom double-tap detector — browser dblclick is unreliable with touch-none
+  const lastTap = useRef<{ pileId: PileId; cardIndex: number; time: number } | null>(null);
+
   const handleCardClick = useCallback(
     (pileId: PileId, cardIndex: number) => {
+      const now = Date.now();
+      const prev = lastTap.current;
+
+      if (prev && prev.pileId === pileId && prev.cardIndex === cardIndex && now - prev.time < DOUBLE_TAP_MS) {
+        // Double-tap detected — try auto-move to foundation
+        lastTap.current = null;
+        const target = findAutoMoveToFoundation(state, pileId, cardIndex);
+        if (target) {
+          moveCards(pileId, target, cardIndex);
+          return;
+        }
+      }
+
+      lastTap.current = { pileId, cardIndex, time: now };
       selectCard(pileId, cardIndex);
     },
-    [selectCard]
-  );
-
-  const handleDoubleClick = useCallback(
-    (pileId: PileId, cardIndex: number) => {
-      const target = findAutoMoveToFoundation(state, pileId, cardIndex);
-      if (target) {
-        moveCards(pileId, target, cardIndex);
-      }
-    },
-    [state, moveCards]
+    [selectCard, state, moveCards]
   );
 
   const handlePileClick = useCallback(
@@ -105,7 +114,6 @@ export function Board() {
           isValidTarget={validTargetSet.has('waste')}
           onPointerDown={handlePointerDown}
           onCardClick={handleCardClick}
-          onDoubleClick={handleDoubleClick}
         />
         <div style={{ width: 'var(--card-width)' }} />
         {state.foundations.map((pile, i) => (
@@ -130,7 +138,6 @@ export function Board() {
             draggingCards={draggingCardIds}
             onPointerDown={handlePointerDown}
             onCardClick={handleCardClick}
-            onDoubleClick={handleDoubleClick}
             onPileClick={handlePileClick}
           />
         ))}

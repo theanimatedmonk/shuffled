@@ -1,5 +1,5 @@
 import type { Card, GameState, PileId } from './types';
-import { SUITS, RANKS, SUIT_COLORS, RANK_VALUES } from './constants';
+import { SUITS, RANKS, SUIT_COLORS, RANK_VALUES, FOUNDATION_SUITS } from './constants';
 
 function createDeck(): Card[] {
   const deck: Card[] = [];
@@ -105,7 +105,8 @@ export function isValidMove(
     const foundation = state.foundations[foundIdx];
 
     if (foundation.length === 0) {
-      return movingCard.rank === 'A';
+      // Ace must match the foundation's designated suit
+      return movingCard.rank === 'A' && movingCard.suit === FOUNDATION_SUITS[foundIdx];
     }
     const topCard = foundation[foundation.length - 1];
     return (

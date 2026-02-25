@@ -29,8 +29,8 @@ export const TopBar = React.memo(function TopBar({
         <button
           className="bg-white/12 text-white border border-white/18 rounded-lg cursor-pointer font-medium backdrop-blur-[4px] whitespace-nowrap transition-[background,transform] hover:bg-white/22 active:scale-[0.96]"
           style={{
-            padding: 'clamp(6px, 1.2vw, 8px) clamp(10px, 2vw, 16px)',
-            fontSize: 'clamp(11px, 2.5vw, 14px)',
+            padding: 'clamp(8px, 1.5vw, 10px) clamp(12px, 2.5vw, 16px)',
+            fontSize: 'clamp(12px, 2.8vw, 14px)',
           }}
           onClick={onNewGame}
         >
@@ -39,8 +39,8 @@ export const TopBar = React.memo(function TopBar({
         <button
           className="bg-white/12 text-white border border-white/18 rounded-lg cursor-pointer font-medium backdrop-blur-[4px] whitespace-nowrap transition-[background,transform] hover:bg-white/22 active:scale-[0.96]"
           style={{
-            padding: 'clamp(6px, 1.2vw, 8px) clamp(10px, 2vw, 16px)',
-            fontSize: 'clamp(11px, 2.5vw, 14px)',
+            padding: 'clamp(8px, 1.5vw, 10px) clamp(12px, 2.5vw, 16px)',
+            fontSize: 'clamp(12px, 2.8vw, 14px)',
           }}
           onClick={onUndo}
         >
@@ -63,7 +63,7 @@ export const TopBar = React.memo(function TopBar({
         className="flex font-medium tracking-wide"
         style={{
           gap: 'clamp(8px, 2vw, 16px)',
-          fontSize: 'clamp(11px, 2.5vw, 14px)',
+          fontSize: 'clamp(12px, 2.8vw, 14px)',
           letterSpacing: '0.3px',
         }}
       >

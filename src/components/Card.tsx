@@ -11,7 +11,6 @@ interface CardProps {
   isValidTarget?: boolean;
   onPointerDown?: (e: React.PointerEvent) => void;
   onClick?: (e: React.MouseEvent) => void;
-  onDoubleClick?: (e: React.MouseEvent) => void;
 }
 
 export const CardComponent = React.memo(function CardComponent({
@@ -23,7 +22,6 @@ export const CardComponent = React.memo(function CardComponent({
   isValidTarget = false,
   onPointerDown,
   onClick,
-  onDoubleClick,
 }: CardProps) {
   const symbol = SUIT_SYMBOLS[card.suit];
   const textColor = card.color === 'red' ? 'text-[#d32f2f]' : 'text-[#212121]';
@@ -42,7 +40,6 @@ export const CardComponent = React.memo(function CardComponent({
       style={style}
       onPointerDown={card.faceUp ? onPointerDown : undefined}
       onClick={onClick}
-      onDoubleClick={card.faceUp ? onDoubleClick : undefined}
     >
       <div
         className={`w-full h-full relative card-3d ${
