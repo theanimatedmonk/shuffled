@@ -1,9 +1,8 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
-import type { Card, PileId, GameState } from '../types';
-import { getValidDropTargets } from '../gameLogic';
+import type { Card } from '../types';
 
 interface DragInfo {
-  sourcePileId: PileId;
+  sourcePileId: string;
   cardIndex: number;
   cards: Card[];
   offsetX: number;
@@ -14,16 +13,27 @@ interface DragInfo {
 
 const DRAG_THRESHOLD = 5;
 
+/**
+ * Generic drag-and-drop hook for card games.
+ *
+ * Each game passes its own `getValidDropTargets` and `getPile` functions
+ * so the hook works with any game's state shape and pile ID system.
+ */
 export function useDragAndDrop(
-  state: GameState,
-  moveCards: (from: PileId, to: PileId, cardIndex: number) => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  state: any,
+  moveCards: (from: string, to: string, cardIndex: number) => void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getValidDropTargets: (state: any, from: string, cardIndex: number) => string[],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getPile: (state: any, pileId: string) => Card[] | null
 ) {
   const dragRef = useRef<DragInfo | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragCards, setDragCards] = useState<Card[]>([]);
   const [draggingCardIds, setDraggingCardIds] = useState<Set<string>>(new Set());
-  const [validTargets, setValidTargets] = useState<PileId[]>([]);
+  const [validTargets, setValidTargets] = useState<string[]>([]);
   const [initialPos, setInitialPos] = useState<{ x: number; y: number } | null>(null);
   const dragActivated = useRef(false);
   const pendingDrag = useRef<DragInfo | null>(null);
@@ -32,9 +42,9 @@ export function useDragAndDrop(
   const pointerTargetRef = useRef<HTMLElement | null>(null);
 
   const handlePointerDown = useCallback(
-    (e: React.PointerEvent, pileId: PileId, cardIndex: number) => {
+    (e: React.PointerEvent, pileId: string, cardIndex: number) => {
       // Don't prevent default or stop propagation — let clicks work
-      const pile = getPileFromState(state, pileId);
+      const pile = getPile(state, pileId);
       if (!pile || cardIndex < 0 || cardIndex >= pile.length) return;
       if (!pile[cardIndex].faceUp) return;
 
@@ -58,7 +68,7 @@ export function useDragAndDrop(
       pointerIdRef.current = e.pointerId;
       pointerTargetRef.current = el;
     },
-    [state]
+    [state, getPile]
   );
 
   useEffect(() => {
@@ -114,12 +124,12 @@ export function useDragAndDrop(
       if (dragActivated.current && dragRef.current) {
         // Find drop target
         const elements = document.elementsFromPoint(e.clientX, e.clientY);
-        let targetPileId: PileId | null = null;
+        let targetPileId: string | null = null;
 
         for (const el of elements) {
           const pileAttr = (el as HTMLElement).dataset?.pileId;
           if (pileAttr) {
-            targetPileId = pileAttr as PileId;
+            targetPileId = pileAttr;
             break;
           }
         }
@@ -160,7 +170,7 @@ export function useDragAndDrop(
       document.removeEventListener('pointerup', handleUp);
       document.removeEventListener('pointercancel', handleUp);
     };
-  }, [state, validTargets, moveCards]);
+  }, [state, validTargets, moveCards, getValidDropTargets, getPile]);
 
   return {
     isDragging,
@@ -171,16 +181,4 @@ export function useDragAndDrop(
     initialPos,
     handlePointerDown,
   };
-}
-
-function getPileFromState(state: GameState, pileId: PileId): Card[] | null {
-  if (pileId === 'stock') return state.stock;
-  if (pileId === 'waste') return state.waste;
-  if (pileId.startsWith('foundation-')) {
-    return state.foundations[parseInt(pileId.split('-')[1])];
-  }
-  if (pileId.startsWith('tableau-')) {
-    return state.tableau[parseInt(pileId.split('-')[1])];
-  }
-  return null;
 }

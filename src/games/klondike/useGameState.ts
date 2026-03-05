@@ -1,8 +1,9 @@
 import { useReducer, useCallback, useEffect } from 'react';
-import type { GameState, GameAction, PileId, HistoryEntry, Card } from '../types';
-import { dealGame, isValidMove, checkWin, calculateScore } from '../gameLogic';
+import type { GameState, GameAction, PileId, HistoryEntry, Card } from './types';
+import { dealGame, isValidMove, checkWin, calculateScore } from './gameLogic';
 
-const STORAGE_KEY = 'solitaire-game-state';
+const STORAGE_KEY = 'shuffled-klondike-state';
+const OLD_STORAGE_KEY = 'solitaire-game-state';
 
 function cloneCards(cards: Card[]): Card[] {
   return cards.map(c => ({ ...c }));
@@ -186,7 +187,16 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
 function loadSavedState(): GameState | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    // Try new key first, then migrate from old key
+    let raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      raw = localStorage.getItem(OLD_STORAGE_KEY);
+      if (raw) {
+        // Migrate: save under new key, remove old key
+        localStorage.setItem(STORAGE_KEY, raw);
+        localStorage.removeItem(OLD_STORAGE_KEY);
+      }
+    }
     if (!raw) return null;
     const parsed = JSON.parse(raw) as GameState;
     // Basic validation: must have the expected shape

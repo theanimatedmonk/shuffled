@@ -50,13 +50,21 @@ export type GameAction =
   | { type: 'SELECT_CARD'; pileId: PileId; cardIndex: number }
   | { type: 'CLEAR_SELECTION' };
 
+// Game type identifier
+export type GameType = 'klondike' | 'spider' | 'freecell' | 'mahjong';
+
 // Settings types
 export type DrawMode = 1 | 3;
 export type CardBackTheme = 'blue' | 'red' | 'green' | 'purple' | 'gold';
+export type SpiderSuitCount = 1 | 2 | 4;
+export type HomeLayout = 'list' | 'grid';
 
 export interface Settings {
   drawMode: DrawMode;
   cardBackTheme: CardBackTheme;
   soundEnabled: boolean;
   autoMoveToFoundation: boolean;
+  spiderSuitCount: SpiderSuitCount;
+  homeLayout: HomeLayout;
+  timerEnabled: boolean;
 }

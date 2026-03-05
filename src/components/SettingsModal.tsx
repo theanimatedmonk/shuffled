@@ -1,18 +1,33 @@
 import { useState } from 'react';
 import { useSettings } from '../contexts/SettingsContext';
 import { CARD_BACK_THEMES } from '../constants';
-import type { CardBackTheme, DrawMode } from '../types';
+import type { CardBackTheme, DrawMode, GameType, SpiderSuitCount } from '../types';
 
 interface SettingsModalProps {
   onClose: () => void;
   onNewGame: () => void;
+  gameType?: GameType;
 }
 
 const THEME_KEYS: CardBackTheme[] = ['blue', 'red', 'green', 'purple', 'gold'];
 
-export function SettingsModal({ onClose, onNewGame }: SettingsModalProps) {
+export function SettingsModal({ onClose, onNewGame, gameType }: SettingsModalProps) {
   const { settings, updateSetting } = useSettings();
   const [confirmDrawChange, setConfirmDrawChange] = useState<DrawMode | null>(null);
+  const [confirmSuitChange, setConfirmSuitChange] = useState<SpiderSuitCount | null>(null);
+
+  const handleSuitCountChange = (count: SpiderSuitCount) => {
+    if (count === settings.spiderSuitCount) return;
+    setConfirmSuitChange(count);
+  };
+
+  const confirmSuitCountChange = () => {
+    if (confirmSuitChange !== null) {
+      updateSetting('spiderSuitCount', confirmSuitChange);
+      setConfirmSuitChange(null);
+      onNewGame();
+    }
+  };
 
   const handleDrawModeChange = (mode: DrawMode) => {
     if (mode === settings.drawMode) return;
@@ -54,51 +69,101 @@ export function SettingsModal({ onClose, onNewGame }: SettingsModalProps) {
           </button>
         </div>
 
-        {/* Draw Mode */}
-        <div className="mb-5">
-          <label className="block text-[#555] font-semibold mb-2" style={{ fontSize: 'clamp(12px, 3vw, 14px)' }}>
-            Draw Mode
-          </label>
-          {confirmDrawChange !== null ? (
-            <div
-              className="bg-[#FFF3E0] rounded-lg text-[#E65100]"
-              style={{ padding: 'clamp(8px, 2vw, 12px)', fontSize: 'clamp(11px, 2.5vw, 13px)' }}
-            >
-              <p className="m-0 mb-2">Changing draw mode will start a new game.</p>
-              <div className="flex gap-2">
-                <button
-                  className="bg-[#E65100] text-white border-none rounded-md px-3 py-1.5 cursor-pointer font-medium text-xs hover:bg-[#BF360C] active:scale-[0.96] transition-[background,transform]"
-                  onClick={confirmDrawModeChange}
-                >
-                  Continue
-                </button>
-                <button
-                  className="bg-transparent text-[#E65100] border border-[#E65100] rounded-md px-3 py-1.5 cursor-pointer font-medium text-xs hover:bg-[#FFF3E0] active:scale-[0.96] transition-[background,transform]"
-                  onClick={() => setConfirmDrawChange(null)}
-                >
-                  Cancel
-                </button>
+        {/* Draw Mode — Klondike only */}
+        {(!gameType || gameType === 'klondike') && (
+          <div className="mb-5">
+            <label className="block text-[#555] font-semibold mb-2" style={{ fontSize: 'clamp(12px, 3vw, 14px)' }}>
+              Draw Mode
+            </label>
+            {confirmDrawChange !== null ? (
+              <div
+                className="bg-[#FFF3E0] rounded-lg text-[#E65100]"
+                style={{ padding: 'clamp(8px, 2vw, 12px)', fontSize: 'clamp(11px, 2.5vw, 13px)' }}
+              >
+                <p className="m-0 mb-2">Changing draw mode will start a new game.</p>
+                <div className="flex gap-2">
+                  <button
+                    className="bg-[#E65100] text-white border-none rounded-md px-3 py-1.5 cursor-pointer font-medium text-xs hover:bg-[#BF360C] active:scale-[0.96] transition-[background,transform]"
+                    onClick={confirmDrawModeChange}
+                  >
+                    Continue
+                  </button>
+                  <button
+                    className="bg-transparent text-[#E65100] border border-[#E65100] rounded-md px-3 py-1.5 cursor-pointer font-medium text-xs hover:bg-[#FFF3E0] active:scale-[0.96] transition-[background,transform]"
+                    onClick={() => setConfirmDrawChange(null)}
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="flex gap-1 bg-[#e8e8e8] rounded-lg p-1">
-              {([1, 3] as DrawMode[]).map((mode) => (
-                <button
-                  key={mode}
-                  className={`flex-1 border-none rounded-md py-2 cursor-pointer font-semibold transition-[background,color,box-shadow] duration-200 ${
-                    settings.drawMode === mode
-                      ? 'bg-white text-[#2e7d32] shadow-[0_1px_3px_rgba(0,0,0,0.15)]'
-                      : 'bg-transparent text-[#666] hover:text-[#333]'
-                  }`}
-                  style={{ fontSize: 'clamp(12px, 2.8vw, 14px)' }}
-                  onClick={() => handleDrawModeChange(mode)}
-                >
-                  Draw {mode}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+            ) : (
+              <div className="flex gap-1 bg-[#e8e8e8] rounded-lg p-1">
+                {([1, 3] as DrawMode[]).map((mode) => (
+                  <button
+                    key={mode}
+                    className={`flex-1 border-none rounded-md py-2 cursor-pointer font-semibold transition-[background,color,box-shadow] duration-200 ${
+                      settings.drawMode === mode
+                        ? 'bg-white text-[#2e7d32] shadow-[0_1px_3px_rgba(0,0,0,0.15)]'
+                        : 'bg-transparent text-[#666] hover:text-[#333]'
+                    }`}
+                    style={{ fontSize: 'clamp(12px, 2.8vw, 14px)' }}
+                    onClick={() => handleDrawModeChange(mode)}
+                  >
+                    Draw {mode}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Suit Count — Spider only */}
+        {gameType === 'spider' && (
+          <div className="mb-5">
+            <label className="block text-[#555] font-semibold mb-2" style={{ fontSize: 'clamp(12px, 3vw, 14px)' }}>
+              Suit Count
+            </label>
+            {confirmSuitChange !== null ? (
+              <div
+                className="bg-[#FFF3E0] rounded-lg text-[#E65100]"
+                style={{ padding: 'clamp(8px, 2vw, 12px)', fontSize: 'clamp(11px, 2.5vw, 13px)' }}
+              >
+                <p className="m-0 mb-2">Changing suit count will start a new game.</p>
+                <div className="flex gap-2">
+                  <button
+                    className="bg-[#E65100] text-white border-none rounded-md px-3 py-1.5 cursor-pointer font-medium text-xs hover:bg-[#BF360C] active:scale-[0.96] transition-[background,transform]"
+                    onClick={confirmSuitCountChange}
+                  >
+                    Continue
+                  </button>
+                  <button
+                    className="bg-transparent text-[#E65100] border border-[#E65100] rounded-md px-3 py-1.5 cursor-pointer font-medium text-xs hover:bg-[#FFF3E0] active:scale-[0.96] transition-[background,transform]"
+                    onClick={() => setConfirmSuitChange(null)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex gap-1 bg-[#e8e8e8] rounded-lg p-1">
+                {([1, 2, 4] as SpiderSuitCount[]).map((count) => (
+                  <button
+                    key={count}
+                    className={`flex-1 border-none rounded-md py-2 cursor-pointer font-semibold transition-[background,color,box-shadow] duration-200 ${
+                      settings.spiderSuitCount === count
+                        ? 'bg-white text-[#2e7d32] shadow-[0_1px_3px_rgba(0,0,0,0.15)]'
+                        : 'bg-transparent text-[#666] hover:text-[#333]'
+                    }`}
+                    style={{ fontSize: 'clamp(12px, 2.8vw, 14px)' }}
+                    onClick={() => handleSuitCountChange(count)}
+                  >
+                    {count} {count === 1 ? 'Suit' : 'Suits'}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Card Back Theme */}
         <div className="mb-5">
@@ -144,23 +209,43 @@ export function SettingsModal({ onClose, onNewGame }: SettingsModalProps) {
           </div>
         </div>
 
-        {/* Auto-Move to Foundation */}
-        <div>
+        {/* Timer */}
+        <div className="mb-5">
           <div className="flex items-center justify-between">
             <div>
               <label className="text-[#555] font-semibold block" style={{ fontSize: 'clamp(12px, 3vw, 14px)' }}>
-                Auto-Move to Foundation
+                Timer
               </label>
               <span className="text-[#999]" style={{ fontSize: 'clamp(10px, 2.2vw, 12px)' }}>
-                Automatically move safe cards up
+                Show elapsed time, score drains over time
               </span>
             </div>
             <ToggleSwitch
-              checked={settings.autoMoveToFoundation}
-              onChange={(v) => updateSetting('autoMoveToFoundation', v)}
+              checked={settings.timerEnabled}
+              onChange={(v) => updateSetting('timerEnabled', v)}
             />
           </div>
         </div>
+
+        {/* Auto-Move to Foundation — Klondike & FreeCell */}
+        {(!gameType || gameType === 'klondike' || gameType === 'freecell') && (
+          <div>
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-[#555] font-semibold block" style={{ fontSize: 'clamp(12px, 3vw, 14px)' }}>
+                  Auto-Move to Foundation
+                </label>
+                <span className="text-[#999]" style={{ fontSize: 'clamp(10px, 2.2vw, 12px)' }}>
+                  Automatically move safe cards up
+                </span>
+              </div>
+              <ToggleSwitch
+                checked={settings.autoMoveToFoundation}
+                onChange={(v) => updateSetting('autoMoveToFoundation', v)}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

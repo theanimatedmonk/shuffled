@@ -15,6 +15,7 @@
   --card-font-size: clamp(14px, 3.5vw, 20px);
   --card-center-font-size: clamp(26px, 7vw, 40px);
   --board-padding: clamp(4px, 1.5vw, 16px);
+  --ad-banner-height: 50px;
 
   /* Card back theme (set dynamically by SettingsContext) */
   --card-back-color1: #1565C0;
@@ -123,7 +124,7 @@ body::before {
 }
 
 /* --- Board Grid (uses CSS custom properties) --- */
-.board-grid {
+.board-grid, .board-grid-7 {
   display: grid;
   grid-template-columns: repeat(7, var(--card-width));
   gap: var(--card-gap);
@@ -131,9 +132,59 @@ body::before {
   max-width: calc(7 * var(--card-width) + 6 * var(--card-gap) + 2 * var(--board-padding));
 }
 
+.board-grid-8 {
+  display: grid;
+  grid-template-columns: repeat(8, var(--card-width));
+  gap: var(--card-gap);
+  padding: var(--board-padding);
+  max-width: calc(8 * var(--card-width) + 7 * var(--card-gap) + 2 * var(--board-padding));
+}
+
+.board-grid-10 {
+  display: grid;
+  grid-template-columns: repeat(10, var(--card-width));
+  gap: var(--card-gap);
+  padding: var(--board-padding);
+  max-width: calc(10 * var(--card-width) + 9 * var(--card-gap) + 2 * var(--board-padding));
+}
+
+/* --- Game-scoped card sizing overrides --- */
+.spider-game {
+  --card-width: clamp(32px, 9vw, 70px);
+  --card-font-size: clamp(11px, 2.8vw, 17px);
+  --card-center-font-size: clamp(20px, 5.5vw, 34px);
+  --tableau-offset: clamp(14px, 3vw, 24px);
+  --tableau-offset-down: clamp(4px, 1vw, 8px);
+}
+
+.freecell-game {
+  --card-width: clamp(40px, 11vw, 75px);
+}
+
+.mahjong-game {
+  --mahjong-tile-width: clamp(30px, 6.5vw, 48px);
+  --mahjong-tile-height: calc(var(--mahjong-tile-width) * 1.35);
+  --mahjong-tile-font-size: clamp(14px, 3.5vw, 22px);
+}
+
+@media (max-width: 420px) {
+  .mahjong-game {
+    --mahjong-tile-width: clamp(22px, 5.8vw, 36px);
+    --mahjong-tile-font-size: clamp(11px, 3vw, 18px);
+  }
+}
+
 /* --- TopBar layout (uses CSS custom properties) --- */
-.topbar-layout {
+.topbar-layout, .topbar-layout-7 {
   max-width: calc(7 * var(--card-width) + 6 * var(--card-gap) + 2 * var(--board-padding));
+}
+
+.topbar-layout-8 {
+  max-width: calc(8 * var(--card-width) + 7 * var(--card-gap) + 2 * var(--board-padding));
+}
+
+.topbar-layout-10 {
+  max-width: calc(10 * var(--card-width) + 9 * var(--card-gap) + 2 * var(--board-padding));
 }
 
 /* --- Desktop-only card hover --- */

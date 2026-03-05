@@ -1,5 +1,5 @@
 import type { Card, GameState, PileId } from './types';
-import { SUITS, RANKS, SUIT_COLORS, RANK_VALUES, FOUNDATION_SUITS } from './constants';
+import { SUITS, RANKS, SUIT_COLORS, RANK_VALUES, FOUNDATION_SUITS } from '../../constants';
 
 function createDeck(): Card[] {
   const deck: Card[] = [];
@@ -61,7 +61,7 @@ function getRankValue(rank: string): number {
   return RANK_VALUES[rank as keyof typeof RANK_VALUES] ?? 0;
 }
 
-function getPileCards(state: GameState, pileId: PileId): Card[] {
+export function getPileCards(state: GameState, pileId: PileId): Card[] {
   if (pileId === 'stock') return state.stock;
   if (pileId === 'waste') return state.waste;
   if (pileId.startsWith('foundation-')) {

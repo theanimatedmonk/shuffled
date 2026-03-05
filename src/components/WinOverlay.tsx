@@ -4,10 +4,11 @@ import confetti from 'canvas-confetti';
 interface WinOverlayProps {
   moves: number;
   score: number;
+  time?: string;
   onNewGame: () => void;
 }
 
-export function WinOverlay({ moves, score, onNewGame }: WinOverlayProps) {
+export function WinOverlay({ moves, score, time, onNewGame }: WinOverlayProps) {
   useEffect(() => {
     // Initial bursts
     confetti({
@@ -73,6 +74,17 @@ export function WinOverlay({ moves, score, onNewGame }: WinOverlayProps) {
               {score}
             </span>
           </div>
+          {time && (
+            <div>
+              <span>Time</span>
+              <span
+                className="font-bold text-[#333] block mt-1 tabular-nums"
+                style={{ fontSize: 'clamp(20px, 4vw, 24px)' }}
+              >
+                {time}
+              </span>
+            </div>
+          )}
         </div>
         <button
           className="bg-[#2e7d32] text-white border-none rounded-xl px-9 py-3.5 text-base font-semibold cursor-pointer transition-[background,transform] duration-200 hover:bg-[#388e3c] active:scale-[0.96]"

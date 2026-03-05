@@ -25,8 +25,8 @@ export const Placeholder = React.memo(function Placeholder({
     >
       {hint && (
         <span
-          className="text-white opacity-15"
-          style={{ fontSize: 'var(--card-center-font-size)' }}
+          className="text-white opacity-15 overflow-hidden text-center leading-none"
+          style={{ fontSize: hint.length > 1 ? 'var(--card-font-size)' : 'var(--card-center-font-size)' }}
         >
           {hint}
         </span>

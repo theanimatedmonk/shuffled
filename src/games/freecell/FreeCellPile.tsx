@@ -1,32 +1,32 @@
 import React from 'react';
-import type { Card } from '../types';
-import { SUIT_SYMBOLS, FOUNDATION_SUITS } from '../constants';
-import { CardComponent } from './Card';
-import { Placeholder } from './Placeholder';
+import type { Card } from '../../types';
+import { CardComponent } from '../../components/Card';
+import { Placeholder } from '../../components/Placeholder';
 
-interface FoundationPileProps {
+interface FreeCellPileProps {
   index: number;
-  cards: Card[];
+  card: Card | null;
+  isSelected: boolean;
   isValidTarget: boolean;
   onCardClick: (pileId: string, cardIndex: number) => void;
   onPileClick: (pileId: string) => void;
 }
 
-export const FoundationPile = React.memo(function FoundationPile({
+export const FreeCellPile = React.memo(function FreeCellPile({
   index,
-  cards,
+  card,
+  isSelected,
   isValidTarget,
   onCardClick,
   onPileClick,
-}: FoundationPileProps) {
-  const pileId = `foundation-${index}`;
-  const suitHint = SUIT_SYMBOLS[FOUNDATION_SUITS[index]];
+}: FreeCellPileProps) {
+  const pileId = `freecell-${index}`;
 
-  if (cards.length === 0) {
+  if (!card) {
     return (
       <div className="relative w-[var(--card-width)] h-[var(--card-height)]" data-pile-id={pileId}>
         <Placeholder
-          hint={suitHint}
+          hint="Free"
           isValidTarget={isValidTarget}
           onClick={() => onPileClick(pileId)}
         />
@@ -34,16 +34,14 @@ export const FoundationPile = React.memo(function FoundationPile({
     );
   }
 
-  const topIndex = cards.length - 1;
-  const topCard = cards[topIndex];
-
   return (
     <div className="relative w-[var(--card-width)] h-[var(--card-height)]" data-pile-id={pileId}>
       <CardComponent
-        card={topCard}
+        card={card}
         isStatic
+        isSelected={isSelected}
         isValidTarget={isValidTarget}
-        onClick={() => onCardClick(pileId, topIndex)}
+        onClick={() => onCardClick(pileId, 0)}
       />
     </div>
   );

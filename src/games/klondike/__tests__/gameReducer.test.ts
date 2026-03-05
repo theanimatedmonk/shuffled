@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import type { Card, GameState, Suit, Rank } from '../types';
-import { gameReducer } from '../hooks/useGameState';
-import { SUIT_COLORS } from '../constants';
+import type { Card, GameState, Suit, Rank } from '../../../types';
+import { gameReducer } from '../useGameState';
+import { SUIT_COLORS } from '../../../constants';
 
 // ── Test Helpers ──────────────────────────────────────────────
 

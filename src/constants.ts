@@ -29,6 +29,9 @@ export const DEFAULT_SETTINGS: Settings = {
   cardBackTheme: 'blue',
   soundEnabled: true,
   autoMoveToFoundation: false,
+  spiderSuitCount: 1,
+  homeLayout: 'list',
+  timerEnabled: true,
 };
 
 export const CARD_BACK_THEMES: Record<CardBackTheme, { color1: string; color2: string; border: string }> = {

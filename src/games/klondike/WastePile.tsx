@@ -1,14 +1,14 @@
 import React from 'react';
-import type { Card, PileId, DrawMode } from '../types';
-import { CardComponent } from './Card';
+import type { Card, DrawMode } from '../../types';
+import { CardComponent } from '../../components/Card';
 
 interface WastePileProps {
   cards: Card[];
   drawMode: DrawMode;
   selectedCardIndex: number | null;
   isValidTarget: boolean;
-  onPointerDown: (e: React.PointerEvent, pileId: PileId, cardIndex: number) => void;
-  onCardClick: (pileId: PileId, cardIndex: number) => void;
+  onPointerDown: (e: React.PointerEvent, pileId: string, cardIndex: number) => void;
+  onCardClick: (pileId: string, cardIndex: number) => void;
 }
 
 export const WastePile = React.memo(function WastePile({

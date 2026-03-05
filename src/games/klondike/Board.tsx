@@ -1,36 +1,63 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import type { PileId } from '../types';
-import { useGameState } from '../hooks/useGameState';
-import { useDragAndDrop } from '../hooks/useDragAndDrop';
-import { useSettings } from '../contexts/SettingsContext';
-import { useSound } from '../hooks/useSound';
+import type { PileId } from './types';
+import { useGameState } from './useGameState';
+import { useDragAndDrop } from '../../hooks/useDragAndDrop';
+import { useSettings } from '../../contexts/SettingsContext';
+import { useSound } from '../../hooks/useSound';
 import {
   canAutoComplete,
   getAutoCompleteMove,
   findAutoMoveToFoundation,
   findSafeAutoMoves,
-} from '../gameLogic';
-import { SUIT_SYMBOLS } from '../constants';
-import { TopBar } from './TopBar';
+  getValidDropTargets,
+  getPileCards,
+} from './gameLogic';
+import { SUIT_SYMBOLS } from '../../constants';
+import { TopBar } from '../../components/TopBar';
 import { StockPile } from './StockPile';
 import { WastePile } from './WastePile';
-import { FoundationPile } from './FoundationPile';
+import { FoundationPile } from '../../components/FoundationPile';
 import { TableauPile } from './TableauPile';
-import { WinOverlay } from './WinOverlay';
-import { SettingsModal } from './SettingsModal';
+import { WinOverlay } from '../../components/WinOverlay';
+import { SettingsModal } from '../../components/SettingsModal';
+import { HowToPlayModal } from '../../components/HowToPlayModal';
+import { AdBanner } from '../../components/AdBanner';
+import { useInterstitialAd } from '../../components/AdInterstitial';
+import { AD_ENABLED } from '../../utils/adConfig';
+import { useGameTimer } from '../../hooks/useGameTimer';
+import { computeDisplayScore } from '../../utils/scoreDrain';
 
 const DOUBLE_TAP_MS = 400;
 
-export function Board() {
+interface KlondikeBoardProps {
+  onGoHome?: () => void;
+}
+
+export function Board({ onGoHome }: KlondikeBoardProps) {
   const { state, newGame, drawStock, moveCards, undo, selectCard } =
     useGameState();
   const { settings } = useSettings();
   const { play } = useSound();
+  const { maybeShowInterstitial } = useInterstitialAd();
+  const { elapsedSeconds, resetTimer, formattedTime } = useGameTimer({
+    gameType: 'klondike',
+    isGameOver: state.hasWon,
+    timerEnabled: settings.timerEnabled,
+  });
+  const displayScore = computeDisplayScore(state.score, elapsedSeconds, settings.timerEnabled);
+
+  // Wrap newGame so every trigger (TopBar, WinOverlay, Settings) goes
+  // through the interstitial counter — ad shows every 3rd new game.
+  const newGameWithAd = useCallback(() => {
+    maybeShowInterstitial();
+    newGame();
+    resetTimer();
+  }, [maybeShowInterstitial, newGame, resetTimer]);
 
   // Wrap moveCards to play sound on drag-drop
   const moveCardsWithSound = useCallback(
-    (from: PileId, to: PileId, cardIndex: number) => {
-      moveCards(from, to, cardIndex);
+    (from: string, to: string, cardIndex: number) => {
+      moveCards(from as PileId, to as PileId, cardIndex);
       play('cardPlace');
     },
     [moveCards, play]
@@ -44,40 +71,47 @@ export function Board() {
     overlayRef,
     initialPos,
     handlePointerDown,
-  } = useDragAndDrop(state, moveCardsWithSound);
+  } = useDragAndDrop(
+    state,
+    moveCardsWithSound,
+    (s, from, idx) => getValidDropTargets(s, from as PileId, idx),
+    (s, id) => getPileCards(s, id as PileId),
+  );
 
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const showAutoComplete = canAutoComplete(state) && !state.hasWon;
 
   // Custom double-tap detector — browser dblclick is unreliable with touch-none
   const lastTap = useRef<{ pileId: PileId; cardIndex: number; time: number } | null>(null);
 
   const handleCardClick = useCallback(
-    (pileId: PileId, cardIndex: number) => {
+    (pileId: string, cardIndex: number) => {
+      const id = pileId as PileId;
       const now = Date.now();
       const prev = lastTap.current;
 
-      if (prev && prev.pileId === pileId && prev.cardIndex === cardIndex && now - prev.time < DOUBLE_TAP_MS) {
+      if (prev && prev.pileId === id && prev.cardIndex === cardIndex && now - prev.time < DOUBLE_TAP_MS) {
         // Double-tap detected — try auto-move to foundation
         lastTap.current = null;
-        const target = findAutoMoveToFoundation(state, pileId, cardIndex);
+        const target = findAutoMoveToFoundation(state, id, cardIndex);
         if (target) {
-          moveCards(pileId, target, cardIndex);
+          moveCards(id, target, cardIndex);
           play('cardPlace');
           return;
         }
       }
 
-      lastTap.current = { pileId, cardIndex, time: now };
-      selectCard(pileId, cardIndex);
+      lastTap.current = { pileId: id, cardIndex, time: now };
+      selectCard(id, cardIndex);
     },
     [selectCard, state, moveCards, play]
   );
 
   const handlePileClick = useCallback(
-    (pileId: PileId) => {
+    (pileId: string) => {
       if (state.selectedCard) {
-        selectCard(pileId, 0);
+        selectCard(pileId as PileId, 0);
       }
     },
     [state.selectedCard, selectCard]
@@ -141,15 +175,18 @@ export function Board() {
   const validTargetSet = new Set(validTargets);
 
   return (
-    <div className="flex-1 flex flex-col w-full overflow-y-auto">
+    <div className="flex-1 flex flex-col w-full overflow-y-auto" style={{ paddingBottom: AD_ENABLED ? 'var(--ad-banner-height, 50px)' : undefined }}>
       <TopBar
         moves={state.moves}
-        score={state.score}
+        score={displayScore}
+        timerDisplay={settings.timerEnabled ? formattedTime : undefined}
         canAutoComplete={showAutoComplete}
-        onNewGame={newGame}
+        onNewGame={newGameWithAd}
         onUndo={undo}
         onAutoComplete={startAutoComplete}
         onOpenSettings={() => setSettingsOpen(true)}
+        onOpenHelp={() => setHelpOpen(true)}
+        onGoHome={onGoHome}
       />
       <div className="board-grid mx-auto w-full justify-center">
         {/* Top row */}
@@ -249,15 +286,27 @@ export function Board() {
         </div>
       )}
 
+      <AdBanner />
+
       {state.hasWon && (
-        <WinOverlay moves={state.moves} score={state.score} onNewGame={newGame} />
+        <WinOverlay
+          moves={state.moves}
+          score={displayScore}
+          time={settings.timerEnabled ? formattedTime : undefined}
+          onNewGame={newGameWithAd}
+        />
       )}
 
       {settingsOpen && (
         <SettingsModal
           onClose={() => setSettingsOpen(false)}
-          onNewGame={() => { newGame(); setSettingsOpen(false); }}
+          onNewGame={() => { newGameWithAd(); setSettingsOpen(false); }}
+          gameType="klondike"
         />
+      )}
+
+      {helpOpen && (
+        <HowToPlayModal gameType="klondike" onClose={() => setHelpOpen(false)} />
       )}
     </div>
   );

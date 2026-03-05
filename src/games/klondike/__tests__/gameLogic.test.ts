@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import type { Card, GameState, Suit, Rank } from '../types';
+import type { Card, GameState, Suit, Rank } from '../../../types';
 import {
   dealGame,
   isValidMove,
@@ -11,7 +11,7 @@ import {
   findAutoMoveToFoundation,
   findSafeAutoMoves,
 } from '../gameLogic';
-import { SUIT_COLORS } from '../constants';
+import { SUIT_COLORS } from '../../../constants';
 
 // ── Test Helpers ──────────────────────────────────────────────
 

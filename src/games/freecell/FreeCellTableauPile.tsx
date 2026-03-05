@@ -1,20 +1,21 @@
 import React from 'react';
-import type { Card, PileId, SelectedCard } from '../types';
-import { CardComponent } from './Card';
-import { Placeholder } from './Placeholder';
+import type { Card } from '../../types';
+import type { SelectedCard } from './types';
+import { CardComponent } from '../../components/Card';
+import { Placeholder } from '../../components/Placeholder';
 
-interface TableauPileProps {
+interface FreeCellTableauPileProps {
   index: number;
   cards: Card[];
   selectedCard: SelectedCard | null;
   isValidTarget: boolean;
   draggingCards: Set<string>;
-  onPointerDown: (e: React.PointerEvent, pileId: PileId, cardIndex: number) => void;
-  onCardClick: (pileId: PileId, cardIndex: number) => void;
-  onPileClick: (pileId: PileId) => void;
+  onPointerDown: (e: React.PointerEvent, pileId: string, cardIndex: number) => void;
+  onCardClick: (pileId: string, cardIndex: number) => void;
+  onPileClick: (pileId: string) => void;
 }
 
-export const TableauPile = React.memo(function TableauPile({
+export const FreeCellTableauPile = React.memo(function FreeCellTableauPile({
   index,
   cards,
   selectedCard,
@@ -23,14 +24,14 @@ export const TableauPile = React.memo(function TableauPile({
   onPointerDown,
   onCardClick,
   onPileClick,
-}: TableauPileProps) {
-  const pileId: PileId = `tableau-${index as 0 | 1 | 2 | 3 | 4 | 5 | 6}`;
+}: FreeCellTableauPileProps) {
+  const pileId = `tableau-${index}`;
 
   if (cards.length === 0) {
     return (
       <div className="relative w-[var(--card-width)]" data-pile-id={pileId} style={{ height: 'var(--card-height)' }}>
         <Placeholder
-          hint="K"
+          hint=""
           isValidTarget={isValidTarget}
           onClick={() => onPileClick(pileId)}
         />
@@ -38,20 +39,17 @@ export const TableauPile = React.memo(function TableauPile({
     );
   }
 
-  // Calculate offsets
+  // Calculate offsets — all cards face up in FreeCell
   let totalOffset = 0;
   const offsets: number[] = [];
   for (let i = 0; i < cards.length; i++) {
     offsets.push(totalOffset);
     if (i < cards.length - 1) {
-      totalOffset += cards[i].faceUp
-        ? getCssVarPx('--tableau-offset', 22)
-        : getCssVarPx('--tableau-offset-down', 8);
+      totalOffset += getCssVarPx('--tableau-offset', 22);
     }
   }
   const totalHeight = totalOffset + getCssVarPx('--card-height', 112);
 
-  // Check if any card at or above index is selected
   const isInSelectedStack = (i: number) =>
     selectedCard?.pileId === pileId && selectedCard.cardIndex <= i;
 
