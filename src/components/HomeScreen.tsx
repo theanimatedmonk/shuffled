@@ -49,7 +49,7 @@ export function HomeScreen({ onSelectGame }: HomeScreenProps) {
       style={{ padding: 'clamp(16px, 4vw, 32px) clamp(12px, 3vw, 24px)' }}
     >
       {/* Logo */}
-      <div className="text-center mb-6" style={{ marginTop: 'clamp(24px, 6vh, 56px)' }}>
+      <div className="text-center mb-4" style={{ marginTop: 'clamp(12px, 3vh, 32px)' }}>
         {/* Fanned card suits */}
         <div className="flex items-center justify-center mb-2" style={{ gap: 'clamp(2px, 0.8vw, 6px)' }}>
           {(['#e53935', '#333', '#e53935', '#333'] as const).map((color, i) => (
@@ -106,8 +106,8 @@ export function HomeScreen({ onSelectGame }: HomeScreenProps) {
               <div
                 className="w-full rounded-lg bg-[#1b5e20] flex items-end justify-center overflow-hidden"
                 style={{
-                  height: 'clamp(68px, 18vw, 92px)',
-                  padding: '12px 6px 6px',
+                  height: 'clamp(85px, 22vw, 130px)',
+                  padding: '16px 6px 8px',
                 }}
               >
                 {game.preview}
@@ -177,8 +177,8 @@ function MiniCard({ faceUp = true, className = '' }: { faceUp?: boolean; classNa
     <div
       className={`rounded-[2px] ${faceUp ? 'bg-white' : 'bg-[#1565C0]'} ${className}`}
       style={{
-        width: 'clamp(6px, 1.5vw, 8px)',
-        height: 'clamp(9px, 2.2vw, 12px)',
+        width: 'clamp(8px, 2vw, 12px)',
+        height: 'clamp(12px, 3vw, 18px)',
         boxShadow: '0 0.5px 1px rgba(0,0,0,0.2)',
       }}
     />
@@ -241,8 +241,8 @@ function MiniTile() {
     <div
       className="rounded-[1px]"
       style={{
-        width: 'clamp(7px, 1.8vw, 10px)',
-        height: 'clamp(9px, 2.2vw, 12px)',
+        width: 'clamp(9px, 2.2vw, 14px)',
+        height: 'clamp(12px, 3vw, 18px)',
         background: 'linear-gradient(145deg, #fffff0, #e8e0c8)',
         boxShadow: '0.5px 0.5px 1px rgba(0,0,0,0.25)',
         border: '0.5px solid #c0b090',
