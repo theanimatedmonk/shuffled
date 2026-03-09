@@ -1,7 +1,7 @@
 {
   "name": "Shuffled",
   "short_name": "Shuffled",
-  "description": "Popular card games",
+  "description": "Play Solitaire, FreeCell, Spider & Mahjong — all in one free, clean card games app.",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#1b5e20",

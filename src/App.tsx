@@ -45,6 +45,19 @@ function App() {
     }
   }, [view.screen]);
 
+  // Dynamic page title for SEO
+  useEffect(() => {
+    const titles: Record<string, string> = {
+      klondike: 'Solitaire – Shuffled',
+      freecell: 'FreeCell – Shuffled',
+      spider: 'Spider Solitaire – Shuffled',
+      mahjong: 'Mahjong – Shuffled',
+    };
+    document.title = view.screen === 'game'
+      ? titles[view.game] || 'Shuffled – Classic Card Games'
+      : 'Shuffled – Classic Card Games';
+  }, [view]);
+
   return (
     <SettingsProvider>
       {view.screen === 'home' && <HomeScreen onSelectGame={selectGame} />}
