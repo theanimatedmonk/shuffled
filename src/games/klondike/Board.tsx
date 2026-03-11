@@ -21,7 +21,7 @@ import { TableauPile } from './TableauPile';
 import { WinOverlay } from '../../components/WinOverlay';
 import { SettingsModal } from '../../components/SettingsModal';
 import { HowToPlayModal } from '../../components/HowToPlayModal';
-import { AdBanner } from '../../components/AdBanner';
+
 import { useInterstitialAd } from '../../components/AdInterstitial';
 import { AD_ENABLED } from '../../utils/adConfig';
 import { useGameTimer } from '../../hooks/useGameTimer';
@@ -289,8 +289,6 @@ export function Board({ onGoHome }: KlondikeBoardProps) {
           })}
         </div>
       )}
-
-      <AdBanner />
 
       {state.hasWon && (
         <WinOverlay

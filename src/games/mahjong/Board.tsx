@@ -7,7 +7,7 @@ import { TopBar } from '../../components/TopBar';
 import { WinOverlay } from '../../components/WinOverlay';
 import { SettingsModal } from '../../components/SettingsModal';
 import { HowToPlayModal } from '../../components/HowToPlayModal';
-import { AdBanner } from '../../components/AdBanner';
+
 import { useInterstitialAd } from '../../components/AdInterstitial';
 import { AD_ENABLED } from '../../utils/adConfig';
 import { useSettings } from '../../contexts/SettingsContext';
@@ -213,8 +213,6 @@ export function Board({ onGoHome }: MahjongBoardProps) {
           </div>
         </div>
       )}
-
-      <AdBanner />
 
       {state.hasWon && (
         <WinOverlay moves={state.moves} score={displayScore} time={settings.timerEnabled ? formattedTime : undefined} onNewGame={newGameWithAd} />

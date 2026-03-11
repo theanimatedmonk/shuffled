@@ -1,38 +1,53 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { AD_ENABLED } from '../utils/adConfig';
 
+declare global {
+  interface Window {
+    adsbygoogle?: unknown[];
+  }
+}
+
 /**
- * Persistent bottom banner ad placeholder.
+ * Persistent bottom banner ad.
  *
  * Fixed to the bottom of the viewport so it stays visible while the
  * user scrolls the tableau.  The Board component adds matching bottom
  * padding so content isn't hidden behind it.
- *
- * Replace the placeholder `<div>` with a real AdMob BannerAd call when
- * integrating `@capacitor-community/admob`.
  */
 export const AdBanner = React.memo(function AdBanner() {
+  const adRef = useRef<HTMLModElement>(null);
+  const pushed = useRef(false);
+
+  useEffect(() => {
+    if (adRef.current && !pushed.current) {
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+        pushed.current = true;
+      } catch {
+        // AdSense not loaded or blocked
+      }
+    }
+  }, []);
+
   if (!AD_ENABLED) return null;
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-[9000] flex items-center justify-center bg-black/40 backdrop-blur-[2px]"
+      className="fixed bottom-0 left-0 right-0 z-[9000]"
       style={{
-        height: 'var(--ad-banner-height, 50px)',
         paddingBottom: 'env(safe-area-inset-bottom)',
+        background: '#1b5e20',
       }}
     >
-      <div
-        className="flex items-center justify-center border-2 border-dashed border-white/20 rounded-md bg-black/20 text-white/40 select-none"
-        style={{
-          width: 320,
-          height: 50,
-          fontSize: 12,
-          letterSpacing: '0.05em',
-        }}
-      >
-        AD PLACEHOLDER
-      </div>
+      <ins
+        className="adsbygoogle"
+        ref={adRef}
+        style={{ display: 'block' }}
+        data-ad-client="ca-pub-0252848696122291"
+        data-ad-slot="7277828243"
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
     </div>
   );
 });

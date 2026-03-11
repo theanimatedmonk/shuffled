@@ -7,6 +7,7 @@ import { Board as MahjongBoard } from './games/mahjong/Board';
 import { HomeScreen } from './components/HomeScreen';
 import { SettingsProvider } from './contexts/SettingsContext';
 import { trackGameSelect, trackGoHome } from './utils/analytics';
+import { AdBanner } from './components/AdBanner';
 
 type AppView = { screen: 'home' } | { screen: 'game'; game: GameType };
 
@@ -65,6 +66,7 @@ function App() {
       {view.screen === 'game' && view.game === 'freecell' && <FreeCellBoard onGoHome={goHome} />}
       {view.screen === 'game' && view.game === 'spider' && <SpiderBoard onGoHome={goHome} />}
       {view.screen === 'game' && view.game === 'mahjong' && <MahjongBoard onGoHome={goHome} />}
+      <AdBanner />
     </SettingsProvider>
   );
 }
