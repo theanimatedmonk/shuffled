@@ -14,6 +14,7 @@ import { useSettings } from '../../contexts/SettingsContext';
 import { useGameTimer } from '../../hooks/useGameTimer';
 import { computeDisplayScore } from '../../utils/scoreDrain';
 import { trackNewGame, trackGameWon, trackGameLost, trackUndo, trackHint, trackShuffle, trackOpenSettings, trackOpenHelp } from '../../utils/analytics';
+import { saveBestScore } from '../../utils/highScores';
 
 interface MahjongBoardProps {
   onGoHome?: () => void;
@@ -80,20 +81,28 @@ export function Board({ onGoHome }: MahjongBoardProps) {
     return { cols: maxCol, rows: maxRow };
   }, [state.tiles]);
 
-  // Win sound + analytics
+  // Win sound + analytics + high score
   const prevWon = useRef(false);
   const prevLost = useRef(false);
+  const [isNewBest, setIsNewBest] = useState(false);
   useEffect(() => {
     if (state.hasWon && !prevWon.current) {
       play('winCelebration');
       trackGameWon('mahjong', state.moves, elapsedSeconds, state.score);
+      const newBest = saveBestScore('mahjong', {
+        score: displayScore,
+        moves: state.moves,
+        elapsedSeconds,
+        date: Date.now(),
+      });
+      setIsNewBest(newBest);
     }
     if (state.hasLost && !state.hasWon && !prevLost.current) {
       trackGameLost('mahjong', state.moves);
     }
     prevWon.current = state.hasWon;
     prevLost.current = state.hasLost;
-  }, [state.hasWon, state.hasLost, play, state.moves, elapsedSeconds, state.score]);
+  }, [state.hasWon, state.hasLost, play, state.moves, elapsedSeconds, state.score, displayScore]);
 
   const tileCount = state.tiles.length;
   const pairsLeft = Math.floor(tileCount / 2);
@@ -215,7 +224,7 @@ export function Board({ onGoHome }: MahjongBoardProps) {
       )}
 
       {state.hasWon && (
-        <WinOverlay moves={state.moves} score={displayScore} time={settings.timerEnabled ? formattedTime : undefined} onNewGame={newGameWithAd} />
+        <WinOverlay moves={state.moves} score={displayScore} time={settings.timerEnabled ? formattedTime : undefined} isNewBest={isNewBest} onNewGame={() => { setIsNewBest(false); newGameWithAd(); }} />
       )}
 
       {settingsOpen && (

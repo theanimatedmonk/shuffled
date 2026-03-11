@@ -5,10 +5,11 @@ interface WinOverlayProps {
   moves: number;
   score: number;
   time?: string;
+  isNewBest?: boolean;
   onNewGame: () => void;
 }
 
-export function WinOverlay({ moves, score, time, onNewGame }: WinOverlayProps) {
+export function WinOverlay({ moves, score, time, isNewBest, onNewGame }: WinOverlayProps) {
   useEffect(() => {
     // Initial bursts
     confetti({
@@ -47,11 +48,19 @@ export function WinOverlay({ moves, score, time, onNewGame }: WinOverlayProps) {
         style={{ padding: 'clamp(24px, 5vw, 40px) clamp(32px, 7vw, 56px)' }}
       >
         <div
-          className="font-[800] text-[#2e7d32] mb-3 tracking-tight"
+          className="font-[800] text-[#2e7d32] mb-1 tracking-tight"
           style={{ fontSize: 'clamp(28px, 7vw, 42px)', letterSpacing: '-0.5px' }}
         >
           You Win!
         </div>
+        {isNewBest && (
+          <div
+            className="text-[#F57F17] font-bold mb-2"
+            style={{ fontSize: 'clamp(13px, 3vw, 16px)' }}
+          >
+            New Personal Best!
+          </div>
+        )}
         <div
           className="flex gap-6 justify-center mb-6 text-[#666]"
           style={{ fontSize: 'clamp(14px, 3vw, 16px)' }}

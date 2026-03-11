@@ -19,6 +19,7 @@ import { useSettings } from '../../contexts/SettingsContext';
 import { useGameTimer } from '../../hooks/useGameTimer';
 import { computeDisplayScore } from '../../utils/scoreDrain';
 import { trackNewGame, trackGameWon, trackUndo, trackOpenSettings, trackOpenHelp } from '../../utils/analytics';
+import { saveBestScore } from '../../utils/highScores';
 
 interface SpiderBoardProps {
   onGoHome?: () => void;
@@ -93,15 +94,23 @@ export function Board({ onGoHome }: SpiderBoardProps) {
     [state.selectedCard, selectCard]
   );
 
-  // Win sound + analytics
+  // Win sound + analytics + high score
   const prevWon = useRef(false);
+  const [isNewBest, setIsNewBest] = useState(false);
   useEffect(() => {
     if (state.hasWon && !prevWon.current) {
       play('winCelebration');
       trackGameWon('spider', state.moves, elapsedSeconds, state.score);
+      const newBest = saveBestScore('spider', {
+        score: displayScore,
+        moves: state.moves,
+        elapsedSeconds,
+        date: Date.now(),
+      });
+      setIsNewBest(newBest);
     }
     prevWon.current = state.hasWon;
-  }, [state.hasWon, play, state.moves, elapsedSeconds, state.score]);
+  }, [state.hasWon, play, state.moves, elapsedSeconds, state.score, displayScore]);
 
   const validTargetSet = new Set(validTargets);
 
@@ -191,7 +200,7 @@ export function Board({ onGoHome }: SpiderBoardProps) {
       )}
 
       {state.hasWon && (
-        <WinOverlay moves={state.moves} score={displayScore} time={settings.timerEnabled ? formattedTime : undefined} onNewGame={newGameWithAd} />
+        <WinOverlay moves={state.moves} score={displayScore} time={settings.timerEnabled ? formattedTime : undefined} isNewBest={isNewBest} onNewGame={() => { setIsNewBest(false); newGameWithAd(); }} />
       )}
 
       {settingsOpen && (

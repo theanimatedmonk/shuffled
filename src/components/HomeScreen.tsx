@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { GameType } from '../types';
 import { HowToPlayModal } from './HowToPlayModal';
 import { trackOpenHelp } from '../utils/analytics';
+import { getBestScore } from '../utils/highScores';
 
 interface HomeScreenProps {
   onSelectGame: (game: GameType) => void;
@@ -95,6 +96,7 @@ export function HomeScreen({ onSelectGame }: HomeScreenProps) {
       >
         {GAMES.map((game) => {
           const hasSave = hasSavedGame(game.type);
+          const best = getBestScore(game.type);
 
           return (
             <button
@@ -127,6 +129,14 @@ export function HomeScreen({ onSelectGame }: HomeScreenProps) {
               >
                 {game.description}
               </p>
+              {best && (
+                <p
+                  className="text-[#F57F17] m-0 font-semibold"
+                  style={{ fontSize: 'clamp(9px, 2vw, 11px)', marginTop: '3px' }}
+                >
+                  Best: {best.score}
+                </p>
+              )}
 
               {/* Bottom row */}
               <div className="flex items-center justify-between" style={{ marginTop: 'clamp(6px, 1.5vw, 10px)' }}>

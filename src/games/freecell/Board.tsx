@@ -26,6 +26,7 @@ import { AD_ENABLED } from '../../utils/adConfig';
 import { useGameTimer } from '../../hooks/useGameTimer';
 import { computeDisplayScore } from '../../utils/scoreDrain';
 import { trackNewGame, trackGameWon, trackUndo, trackAutoComplete, trackOpenSettings, trackOpenHelp } from '../../utils/analytics';
+import { saveBestScore } from '../../utils/highScores';
 
 const DOUBLE_TAP_MS = 400;
 
@@ -148,15 +149,23 @@ export function Board({ onGoHome }: FreeCellBoardProps) {
     return () => clearTimeout(timeout);
   }, [state, settings.autoMoveToFoundation, autoCompleting, moveCards, play]);
 
-  // Win sound + analytics
+  // Win sound + analytics + high score
   const prevWon = useRef(false);
+  const [isNewBest, setIsNewBest] = useState(false);
   useEffect(() => {
     if (state.hasWon && !prevWon.current) {
       play('winCelebration');
       trackGameWon('freecell', state.moves, elapsedSeconds, state.score);
+      const newBest = saveBestScore('freecell', {
+        score: displayScore,
+        moves: state.moves,
+        elapsedSeconds,
+        date: Date.now(),
+      });
+      setIsNewBest(newBest);
     }
     prevWon.current = state.hasWon;
-  }, [state.hasWon, play, state.moves, elapsedSeconds, state.score]);
+  }, [state.hasWon, play, state.moves, elapsedSeconds, state.score, displayScore]);
 
   const validTargetSet = new Set(validTargets);
 
@@ -256,7 +265,7 @@ export function Board({ onGoHome }: FreeCellBoardProps) {
       )}
 
       {state.hasWon && (
-        <WinOverlay moves={state.moves} score={displayScore} time={settings.timerEnabled ? formattedTime : undefined} onNewGame={newGameWithAd} />
+        <WinOverlay moves={state.moves} score={displayScore} time={settings.timerEnabled ? formattedTime : undefined} isNewBest={isNewBest} onNewGame={() => { setIsNewBest(false); newGameWithAd(); }} />
       )}
 
       {settingsOpen && (
