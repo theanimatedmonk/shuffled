@@ -51,7 +51,7 @@ export type GameAction =
   | { type: 'CLEAR_SELECTION' };
 
 // Game type identifier
-export type GameType = 'klondike' | 'spider' | 'freecell' | 'mahjong';
+export type GameType = 'klondike' | 'spider' | 'freecell' | 'mahjong' | 'wordsearch';
 
 // Settings types
 export type DrawMode = 1 | 3;

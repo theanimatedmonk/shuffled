@@ -33,6 +33,12 @@ const GAMES: { type: GameType; name: string; description: string; preview: React
     description: 'Match pairs of free tiles',
     preview: <MahjongPreview />,
   },
+  {
+    type: 'wordsearch',
+    name: 'Word Search',
+    description: 'Find hidden words in the grid',
+    preview: <WordSearchPreview />,
+  },
 ];
 
 const STORAGE_KEYS: Record<GameType, string> = {
@@ -40,6 +46,7 @@ const STORAGE_KEYS: Record<GameType, string> = {
   freecell: 'shuffled-freecell-state',
   spider: 'shuffled-spider-state',
   mahjong: 'shuffled-mahjong-state',
+  wordsearch: 'shuffled-wordsearch-state',
 };
 
 export function HomeScreen({ onSelectGame }: HomeScreenProps) {
@@ -259,6 +266,28 @@ function MiniTile() {
         border: '0.5px solid #c0b090',
       }}
     />
+  );
+}
+
+function WordSearchPreview() {
+  const letters = ['F', 'I', 'N', 'D', 'W', 'O', 'R', 'D', 'S'];
+  return (
+    <div className="grid grid-cols-3 gap-[2px]">
+      {letters.map((l, i) => (
+        <div
+          key={i}
+          className="flex items-center justify-center font-bold text-white/90 rounded-[2px]"
+          style={{
+            width: 'clamp(14px, 3.5vw, 20px)',
+            height: 'clamp(14px, 3.5vw, 20px)',
+            fontSize: 'clamp(8px, 2vw, 11px)',
+            background: [0, 1, 2, 3].includes(i) ? 'rgba(76,175,80,0.7)' : 'rgba(255,255,255,0.15)',
+          }}
+        >
+          {l}
+        </div>
+      ))}
+    </div>
   );
 }
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Card as CardType } from '../types';
 import { SUIT_SYMBOLS } from '../constants';
+import { FaceCardArt } from './FaceCardArt';
 
 interface CardProps {
   card: CardType;
@@ -25,6 +26,7 @@ export const CardComponent = React.memo(function CardComponent({
 }: CardProps) {
   const symbol = SUIT_SYMBOLS[card.suit];
   const textColor = card.color === 'red' ? 'text-[#d32f2f]' : 'text-[#212121]';
+  const isFaceCard = ['J', 'Q', 'K'].includes(card.rank);
 
   const containerClasses = [
     'w-[var(--card-width)] h-[var(--card-height)] card-3d-container z-[1]',
@@ -58,27 +60,22 @@ export const CardComponent = React.memo(function CardComponent({
             padding: 'clamp(2px, 0.5vw, 5px)',
           }}
         >
-          <div className={`flex flex-col items-center leading-none self-start ${textColor}`}>
-            <span className="font-bold leading-[1.1]" style={{ fontSize: 'var(--card-font-size)' }}>
+          {/* Top row: rank left, suit pip right */}
+          <div className={`flex items-start justify-between ${textColor}`}>
+            <span className="font-bold leading-[1.1]" style={{ fontSize: 'calc(var(--card-font-size) * 1.4)' }}>
               {card.rank}
             </span>
-            <span className="leading-none" style={{ fontSize: 'calc(var(--card-font-size) * 0.8)' }}>
+            <span className="leading-none" style={{ fontSize: 'calc(var(--card-font-size) * 0.85)' }}>
               {symbol}
             </span>
           </div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+
+          {/* Center content */}
+          <div className="absolute top-[55%] left-1/2 -translate-x-1/2 -translate-y-1/2">
             <span
-              className={`leading-none opacity-85 ${textColor}`}
-              style={{ fontSize: 'var(--card-center-font-size)' }}
+              className={`leading-none ${textColor}`}
+              style={{ fontSize: 'calc(var(--card-center-font-size) * 1.4)' }}
             >
-              {symbol}
-            </span>
-          </div>
-          <div className={`flex flex-col items-center leading-none self-end rotate-180 ${textColor}`}>
-            <span className="font-bold leading-[1.1]" style={{ fontSize: 'var(--card-font-size)' }}>
-              {card.rank}
-            </span>
-            <span className="leading-none" style={{ fontSize: 'calc(var(--card-font-size) * 0.8)' }}>
               {symbol}
             </span>
           </div>

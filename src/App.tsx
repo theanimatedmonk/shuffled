@@ -4,6 +4,7 @@ import { Board as KlondikeBoard } from './games/klondike/Board';
 import { Board as FreeCellBoard } from './games/freecell/Board';
 import { Board as SpiderBoard } from './games/spider/Board';
 import { Board as MahjongBoard } from './games/mahjong/Board';
+import { Board as WordSearchBoard } from './games/wordsearch/Board';
 import { HomeScreen } from './components/HomeScreen';
 import { SettingsProvider } from './contexts/SettingsContext';
 import { trackGameSelect, trackGoHome } from './utils/analytics';
@@ -53,6 +54,7 @@ function App() {
       freecell: 'FreeCell – Shuffled',
       spider: 'Spider Solitaire – Shuffled',
       mahjong: 'Mahjong – Shuffled',
+      wordsearch: 'Word Search – Shuffled',
     };
     document.title = view.screen === 'game'
       ? titles[view.game] || 'Shuffled – Classic Card Games'
@@ -66,6 +68,7 @@ function App() {
       {view.screen === 'game' && view.game === 'freecell' && <FreeCellBoard onGoHome={goHome} />}
       {view.screen === 'game' && view.game === 'spider' && <SpiderBoard onGoHome={goHome} />}
       {view.screen === 'game' && view.game === 'mahjong' && <MahjongBoard onGoHome={goHome} />}
+      {view.screen === 'game' && view.game === 'wordsearch' && <WordSearchBoard onGoHome={goHome} />}
       <AdBanner />
     </SettingsProvider>
   );

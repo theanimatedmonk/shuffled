@@ -5,7 +5,7 @@
  * and we get type-safe event names + params.
  */
 
-type GameType = 'klondike' | 'freecell' | 'spider' | 'mahjong';
+type GameType = 'klondike' | 'freecell' | 'spider' | 'mahjong' | 'wordsearch';
 
 /* global gtag shim — defined in index.html */
 declare global {

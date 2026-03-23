@@ -41,13 +41,14 @@ export function HowToPlayModal({ gameType, onClose }: HowToPlayModalProps) {
             fontSize: 'clamp(11px, 2.5vw, 13px)',
           }}
         >
-          {gameType === 'klondike' ? 'Classic Solitaire' : gameType === 'freecell' ? 'FreeCell' : gameType === 'spider' ? 'Spider Solitaire' : 'Mahjong'}
+          {gameType === 'klondike' ? 'Classic Solitaire' : gameType === 'freecell' ? 'FreeCell' : gameType === 'spider' ? 'Spider Solitaire' : gameType === 'mahjong' ? 'Mahjong' : 'Word Search'}
         </div>
 
         {gameType === 'klondike' && <KlondikeRules />}
         {gameType === 'freecell' && <FreeCellRules />}
         {gameType === 'spider' && <SpiderRules />}
         {gameType === 'mahjong' && <MahjongRules />}
+        {gameType === 'wordsearch' && <WordSearchRules />}
       </div>
     </div>
   );
@@ -130,6 +131,28 @@ function SpiderRules() {
       </Section>
       <Section title="Tip">
         <p className="m-0 text-[#888] italic">Build same-suit sequences whenever possible. Mixed-suit stacks block group moves.</p>
+      </Section>
+    </>
+  );
+}
+
+function WordSearchRules() {
+  return (
+    <>
+      <Section title="Goal">
+        <p className="m-0">Find all the hidden words in the letter grid to complete each level.</p>
+      </Section>
+      <Section title="How to Select">
+        <p className="m-0">Touch a letter and drag in a straight line (horizontal, vertical, or diagonal) to highlight a word. Release to submit your selection.</p>
+      </Section>
+      <Section title="Levels">
+        <p className="m-0">Each level gets harder with larger grids, more words, and additional directions. Complete all words to advance to the next level.</p>
+      </Section>
+      <Section title="Scoring">
+        <p className="m-0">Earn points for each word found (longer words score more). Bonus points are awarded for completing a level.</p>
+      </Section>
+      <Section title="Tip">
+        <p className="m-0 text-[#888] italic">Look for less common letters first (Q, Z, X) to quickly spot word locations.</p>
       </Section>
     </>
   );
