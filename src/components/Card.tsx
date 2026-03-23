@@ -1,8 +1,6 @@
 import React from 'react';
 import type { Card as CardType } from '../types';
 import { SUIT_SYMBOLS } from '../constants';
-import { FaceCardArt } from './FaceCardArt';
-
 interface CardProps {
   card: CardType;
   style?: React.CSSProperties;
@@ -26,8 +24,6 @@ export const CardComponent = React.memo(function CardComponent({
 }: CardProps) {
   const symbol = SUIT_SYMBOLS[card.suit];
   const textColor = card.color === 'red' ? 'text-[#d32f2f]' : 'text-[#212121]';
-  const isFaceCard = ['J', 'Q', 'K'].includes(card.rank);
-
   const containerClasses = [
     'w-[var(--card-width)] h-[var(--card-height)] card-3d-container z-[1]',
     isStatic ? 'relative' : 'absolute',

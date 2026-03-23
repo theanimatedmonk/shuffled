@@ -5,7 +5,6 @@ import { useGridDrag } from './useGridDrag';
 import { GridCell, getFoundColor } from './GridCell';
 import { WordList } from './WordList';
 import { TopBar } from '../../components/TopBar';
-import { WinOverlay } from '../../components/WinOverlay';
 import { HowToPlayModal } from '../../components/HowToPlayModal';
 import { SettingsModal } from '../../components/SettingsModal';
 import { useInterstitialAd } from '../../components/AdInterstitial';
@@ -81,7 +80,7 @@ export function Board({ onGoHome }: WordSearchBoardProps) {
   const hasTrackedWin = useMemo(() => ({ current: false }), []);
   if (state.hasWon && !hasTrackedWin.current) {
     hasTrackedWin.current = true;
-    saveBestScore('wordsearch', state.score, state.moves, elapsedSeconds);
+    saveBestScore('wordsearch', { score: state.score, moves: state.moves, elapsedSeconds, date: Date.now() });
     trackGameWon('wordsearch', state.moves, elapsedSeconds, state.score);
   }
   if (!state.hasWon) hasTrackedWin.current = false;

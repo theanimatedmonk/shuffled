@@ -43,7 +43,6 @@ describe('WORD_POOL', () => {
   });
 
   it('has enough unique words for the hardest level', () => {
-    const unique = new Set(WORD_POOL);
     // Level 10 needs 12 words of length 5-8
     const eligible = WORD_POOL.filter(w => w.length >= 5 && w.length <= 8);
     const uniqueEligible = new Set(eligible);
