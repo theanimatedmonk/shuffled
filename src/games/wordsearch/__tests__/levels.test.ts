@@ -2,14 +2,22 @@ import { describe, it, expect } from 'vitest';
 import { LEVELS, getLevelConfig } from '../levels';
 
 describe('LEVELS', () => {
-  it('has 10 defined levels', () => {
-    expect(LEVELS.length).toBe(10);
+  it('has 50 defined levels', () => {
+    expect(LEVELS.length).toBe(50);
   });
 
-  it('levels are numbered 1 through 10', () => {
+  it('levels are numbered 1 through 50', () => {
     LEVELS.forEach((level, i) => {
       expect(level.level).toBe(i + 1);
     });
+  });
+
+  it('has 10 levels per grid size', () => {
+    const gridSizes = [8, 9, 10, 11, 12];
+    for (const size of gridSizes) {
+      const count = LEVELS.filter(l => l.gridRows === size).length;
+      expect(count).toBe(10);
+    }
   });
 
   it('grid size increases or stays the same across levels', () => {
@@ -19,9 +27,11 @@ describe('LEVELS', () => {
     }
   });
 
-  it('word count increases or stays the same across levels', () => {
+  it('word count increases or stays the same within each grid size', () => {
     for (let i = 1; i < LEVELS.length; i++) {
-      expect(LEVELS[i].wordCount).toBeGreaterThanOrEqual(LEVELS[i - 1].wordCount);
+      if (LEVELS[i].gridRows === LEVELS[i - 1].gridRows) {
+        expect(LEVELS[i].wordCount).toBeGreaterThanOrEqual(LEVELS[i - 1].wordCount);
+      }
     }
   });
 
@@ -40,9 +50,8 @@ describe('LEVELS', () => {
     }
   });
 
-  it('all levels have wordCount <= grid capacity (rows * cols)', () => {
+  it('all levels have wordCount <= grid capacity', () => {
     for (const level of LEVELS) {
-      // Very loose sanity check: word count should be far less than total cells
       expect(level.wordCount).toBeLessThan(level.gridRows * level.gridCols);
     }
   });
@@ -53,19 +62,19 @@ describe('getLevelConfig', () => {
     const config = getLevelConfig(1);
     expect(config.level).toBe(1);
     expect(config.gridRows).toBe(8);
-    expect(config.wordCount).toBe(4);
+    expect(config.wordCount).toBe(3);
   });
 
-  it('returns config for level 10', () => {
-    const config = getLevelConfig(10);
-    expect(config.level).toBe(10);
+  it('returns config for level 50', () => {
+    const config = getLevelConfig(50);
+    expect(config.level).toBe(50);
     expect(config.gridRows).toBe(12);
-    expect(config.wordCount).toBe(12);
+    expect(config.wordCount).toBe(14);
   });
 
-  it('returns hardest config for levels beyond 10', () => {
-    const config = getLevelConfig(25);
-    expect(config.level).toBe(25);
+  it('returns hardest config for levels beyond 50', () => {
+    const config = getLevelConfig(75);
+    expect(config.level).toBe(75);
     expect(config.gridRows).toBe(LEVELS[LEVELS.length - 1].gridRows);
     expect(config.wordCount).toBe(LEVELS[LEVELS.length - 1].wordCount);
   });
@@ -74,6 +83,6 @@ describe('getLevelConfig', () => {
     const config = getLevelConfig(1);
     config.wordCount = 999;
     const fresh = getLevelConfig(1);
-    expect(fresh.wordCount).toBe(4);
+    expect(fresh.wordCount).toBe(3);
   });
 });

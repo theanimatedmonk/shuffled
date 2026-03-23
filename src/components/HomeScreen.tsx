@@ -8,30 +8,26 @@ interface HomeScreenProps {
   onSelectGame: (game: GameType) => void;
 }
 
-const GAMES: { type: GameType; name: string; description: string; preview: React.ReactNode }[] = [
+const GAMES: { type: GameType; name: string; description: string; preview?: React.ReactNode }[] = [
   {
     type: 'klondike',
     name: 'Classic Solitaire',
     description: 'The classic solitaire card game',
-    preview: <KlondikePreview />,
   },
   {
     type: 'freecell',
     name: 'FreeCell',
     description: 'Use free cells strategically to win',
-    preview: <FreeCellPreview />,
   },
   {
     type: 'spider',
     name: 'Spider Solitaire',
     description: 'Build suit runs with two decks',
-    preview: <SpiderPreview />,
   },
   {
     type: 'mahjong',
     name: 'Mahjong',
     description: 'Match pairs of free tiles',
-    preview: <MahjongPreview />,
   },
   {
     type: 'wordsearch',
@@ -114,13 +110,21 @@ export function HomeScreen({ onSelectGame }: HomeScreenProps) {
             >
               {/* Preview */}
               <div
-                className="w-full rounded-lg bg-[#1b5e20] flex items-end justify-center overflow-hidden"
-                style={{
-                  height: 'clamp(85px, 22vw, 130px)',
-                  padding: '16px 6px 8px',
-                }}
+                className="w-full rounded-lg overflow-hidden"
+                style={{ height: 'clamp(85px, 22vw, 130px)' }}
               >
-                {game.preview}
+                {game.preview ? (
+                  <div className="w-full h-full bg-[#1b5e20] flex items-end justify-center" style={{ padding: '16px 6px 8px' }}>
+                    {game.preview}
+                  </div>
+                ) : (
+                  <img
+                    src={`/previews/${game.type}.png`}
+                    alt={game.name}
+                    className="w-full h-full object-cover object-top"
+                    loading="lazy"
+                  />
+                )}
               </div>
 
               {/* Text content */}
@@ -190,85 +194,6 @@ function hasSavedGame(game: GameType): boolean {
 
 // ── Mini Previews ─────────────────────────────────────────────
 
-function MiniCard({ faceUp = true, className = '' }: { faceUp?: boolean; className?: string }) {
-  return (
-    <div
-      className={`rounded-[2px] ${faceUp ? 'bg-white' : 'bg-[#1565C0]'} ${className}`}
-      style={{
-        width: 'clamp(8px, 2vw, 12px)',
-        height: 'clamp(12px, 3vw, 18px)',
-        boxShadow: '0 0.5px 1px rgba(0,0,0,0.2)',
-      }}
-    />
-  );
-}
-
-function KlondikePreview() {
-  return (
-    <div className="flex items-end gap-[2px]">
-      {[1, 2, 3, 4, 5, 6, 7].map((count, col) => (
-        <div key={col} className="flex flex-col-reverse gap-[1px]">
-          {Array.from({ length: count }, (_, i) => (
-            <MiniCard key={i} faceUp={i === 0} />
-          ))}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function FreeCellPreview() {
-  return (
-    <div className="flex flex-col gap-[2px] items-center">
-      <div className="flex gap-[2px]">
-        {Array.from({ length: 8 }, (_, i) => (
-          <MiniCard key={i} faceUp={i < 4 ? false : true} />
-        ))}
-      </div>
-      <div className="flex gap-[2px]">
-        {Array.from({ length: 8 }, (_, i) => (
-          <div key={i} className="flex flex-col gap-[1px]">
-            <MiniCard faceUp />
-            <MiniCard faceUp />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function SpiderPreview() {
-  return (
-    <div className="flex items-end gap-[1px]">
-      {Array.from({ length: 10 }, (_, col) => {
-        const count = col < 4 ? 3 : 2;
-        return (
-          <div key={col} className="flex flex-col-reverse gap-[1px]">
-            {Array.from({ length: count }, (_, i) => (
-              <MiniCard key={i} faceUp={i === 0} />
-            ))}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function MiniTile() {
-  return (
-    <div
-      className="rounded-[1px]"
-      style={{
-        width: 'clamp(9px, 2.2vw, 14px)',
-        height: 'clamp(12px, 3vw, 18px)',
-        background: 'linear-gradient(145deg, #fffff0, #e8e0c8)',
-        boxShadow: '0.5px 0.5px 1px rgba(0,0,0,0.25)',
-        border: '0.5px solid #c0b090',
-      }}
-    />
-  );
-}
-
 function WordSearchPreview() {
   const letters = ['F', 'I', 'N', 'D', 'W', 'O', 'R', 'D', 'S'];
   return (
@@ -291,16 +216,3 @@ function WordSearchPreview() {
   );
 }
 
-function MahjongPreview() {
-  return (
-    <div className="flex flex-col items-center gap-[1px]">
-      <MiniTile />
-      <div className="flex gap-[1px]">
-        <MiniTile /><MiniTile /><MiniTile />
-      </div>
-      <div className="flex gap-[1px]">
-        <MiniTile /><MiniTile /><MiniTile /><MiniTile /><MiniTile />
-      </div>
-    </div>
-  );
-}
