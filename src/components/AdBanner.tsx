@@ -49,7 +49,7 @@ export const AdBanner = React.memo(function AdBanner() {
   return (
     <div
       ref={containerRef}
-      className="fixed bottom-0 left-0 right-0 z-[9000]"
+      className="shrink-0 w-full"
       style={{
         paddingBottom: adLoaded ? 'env(safe-area-inset-bottom)' : 0,
         overflow: 'hidden',

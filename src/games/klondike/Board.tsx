@@ -23,7 +23,6 @@ import { SettingsModal } from '../../components/SettingsModal';
 import { HowToPlayModal } from '../../components/HowToPlayModal';
 
 import { useInterstitialAd } from '../../components/AdInterstitial';
-import { AD_ENABLED } from '../../utils/adConfig';
 import { useGameTimer } from '../../hooks/useGameTimer';
 import { computeDisplayScore } from '../../utils/scoreDrain';
 import { trackNewGame, trackGameWon, trackUndo, trackAutoComplete, trackOpenSettings, trackOpenHelp } from '../../utils/analytics';
@@ -188,7 +187,7 @@ export function Board({ onGoHome }: KlondikeBoardProps) {
   const validTargetSet = new Set(validTargets);
 
   return (
-    <div className="flex-1 flex flex-col w-full overflow-y-auto" style={{ paddingBottom: AD_ENABLED ? 'var(--ad-banner-height, 50px)' : undefined }}>
+    <div className="flex-1 flex flex-col w-full overflow-y-auto">
       <TopBar
         moves={state.moves}
         score={displayScore}

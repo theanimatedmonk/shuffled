@@ -22,7 +22,6 @@ import { SettingsModal } from '../../components/SettingsModal';
 import { HowToPlayModal } from '../../components/HowToPlayModal';
 
 import { useInterstitialAd } from '../../components/AdInterstitial';
-import { AD_ENABLED } from '../../utils/adConfig';
 import { useGameTimer } from '../../hooks/useGameTimer';
 import { computeDisplayScore } from '../../utils/scoreDrain';
 import { trackNewGame, trackGameWon, trackUndo, trackAutoComplete, trackOpenSettings, trackOpenHelp } from '../../utils/analytics';
@@ -170,7 +169,7 @@ export function Board({ onGoHome }: FreeCellBoardProps) {
   const validTargetSet = new Set(validTargets);
 
   return (
-    <div className="freecell-game flex-1 flex flex-col w-full overflow-y-auto" style={{ paddingBottom: AD_ENABLED ? 'var(--ad-banner-height, 50px)' : undefined }}>
+    <div className="freecell-game flex-1 flex flex-col w-full overflow-y-auto">
       <TopBar
         moves={state.moves}
         score={displayScore}

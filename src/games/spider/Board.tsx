@@ -14,7 +14,6 @@ import { SettingsModal } from '../../components/SettingsModal';
 import { HowToPlayModal } from '../../components/HowToPlayModal';
 
 import { useInterstitialAd } from '../../components/AdInterstitial';
-import { AD_ENABLED } from '../../utils/adConfig';
 import { useSettings } from '../../contexts/SettingsContext';
 import { useGameTimer } from '../../hooks/useGameTimer';
 import { computeDisplayScore } from '../../utils/scoreDrain';
@@ -115,7 +114,7 @@ export function Board({ onGoHome }: SpiderBoardProps) {
   const validTargetSet = new Set(validTargets);
 
   return (
-    <div className="spider-game flex-1 flex flex-col w-full overflow-y-auto" style={{ paddingBottom: AD_ENABLED ? 'var(--ad-banner-height, 50px)' : undefined }}>
+    <div className="spider-game flex-1 flex flex-col w-full overflow-y-auto">
       <TopBar
         moves={state.moves}
         score={displayScore}
