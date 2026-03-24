@@ -46,7 +46,6 @@ export function Board({ onGoHome }: WordSearchBoardProps) {
   }, [undo]);
 
   const handleSelectionComplete = useCallback((positions: GridPosition[]) => {
-    const prevFound = state.foundWords.length;
     selectWord(positions);
     // Track word found if a new word was matched (foundWords will update on next render,
     // so we check by comparing with the grid words)
