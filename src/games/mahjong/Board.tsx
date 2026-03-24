@@ -107,7 +107,7 @@ export function Board({ onGoHome }: MahjongBoardProps) {
   const pairsLeft = Math.floor(tileCount / 2);
 
   return (
-    <div className="mahjong-game flex-1 flex flex-col w-full overflow-auto">
+    <div className="mahjong-game flex-1 flex flex-col w-full overflow-hidden">
       <TopBar
         moves={state.moves}
         score={displayScore}
@@ -152,7 +152,7 @@ export function Board({ onGoHome }: MahjongBoardProps) {
       />
 
       {/* Board area */}
-      <div className="flex-1 flex items-start justify-center overflow-auto" style={{ padding: 'clamp(4px, 1vw, 12px)' }}>
+      <div className="flex-1 flex items-center justify-center overflow-hidden" style={{ padding: 'clamp(4px, 1vw, 12px)' }}>
         <div
           className="relative"
           style={{

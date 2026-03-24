@@ -2,6 +2,14 @@ import { useState } from 'react';
 import { useSettings } from '../contexts/SettingsContext';
 import { CARD_BACK_THEMES } from '../constants';
 import type { CardBackTheme, DrawMode, GameType, SpiderSuitCount } from '../types';
+
+const ALL_GAMES: { type: GameType; name: string }[] = [
+  { type: 'klondike', name: 'Classic Solitaire' },
+  { type: 'freecell', name: 'FreeCell' },
+  { type: 'spider', name: 'Spider Solitaire' },
+  { type: 'mahjong', name: 'Mahjong' },
+  { type: 'wordsearch', name: 'Word Search' },
+];
 import { trackSettingChange } from '../utils/analytics';
 
 interface SettingsModalProps {
@@ -232,7 +240,7 @@ export function SettingsModal({ onClose, onNewGame, gameType }: SettingsModalPro
 
         {/* Auto-Move to Foundation — Klondike & FreeCell */}
         {(!gameType || gameType === 'klondike' || gameType === 'freecell') && (
-          <div>
+          <div className="mb-5">
             <div className="flex items-center justify-between">
               <div>
                 <label className="text-[#555] font-semibold block" style={{ fontSize: 'clamp(12px, 3vw, 14px)' }}>
@@ -246,6 +254,36 @@ export function SettingsModal({ onClose, onNewGame, gameType }: SettingsModalPro
                 checked={settings.autoMoveToFoundation}
                 onChange={(v) => { trackSettingChange('autoMoveToFoundation', v); updateSetting('autoMoveToFoundation', v); }}
               />
+            </div>
+          </div>
+        )}
+
+        {/* Visible Games — Home screen settings only */}
+        {!gameType && (
+          <div>
+            <label className="block text-[#555] font-semibold mb-2" style={{ fontSize: 'clamp(12px, 3vw, 14px)' }}>
+              Visible Games
+            </label>
+            <div className="flex flex-col gap-2">
+              {ALL_GAMES.map((game) => {
+                const isHidden = settings.hiddenGames.includes(game.type);
+                return (
+                  <div key={game.type} className="flex items-center justify-between">
+                    <span className="text-[#555]" style={{ fontSize: 'clamp(12px, 3vw, 14px)' }}>
+                      {game.name}
+                    </span>
+                    <ToggleSwitch
+                      checked={!isHidden}
+                      onChange={(visible) => {
+                        const next = visible
+                          ? settings.hiddenGames.filter(t => t !== game.type)
+                          : [...settings.hiddenGames, game.type];
+                        updateSetting('hiddenGames', next);
+                      }}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

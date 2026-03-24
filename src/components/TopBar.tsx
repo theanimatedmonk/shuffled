@@ -52,7 +52,8 @@ export const TopBar = React.memo(function TopBar({
       <div
         className={`${layoutClass} flex justify-between items-center text-white/85 mx-auto w-full`}
         style={{
-          padding: 'clamp(8px, 1.5vw, 12px) var(--board-padding)',
+          padding: 'clamp(8px, 1.5vw, 12px) var(--board-padding) 0',
+          marginBottom: 'clamp(8px, 2vh, 20px)',
           gap: 'clamp(4px, 1vw, 12px)',
         }}
       >
