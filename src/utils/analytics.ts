@@ -38,8 +38,8 @@ export function trackNewGame(game: GameType) {
 }
 
 /** User wins a game */
-export function trackGameWon(game: GameType, moves: number, seconds: number, score: number) {
-  track('game_won', { game, moves, seconds, score });
+export function trackGameWon(game: GameType, moves: number, seconds: number, score: number, extra?: Record<string, string | number>) {
+  track('game_won', { game, moves, seconds, score, ...extra });
 }
 
 /** User loses (Mahjong: no more moves) */
@@ -67,6 +67,23 @@ export function trackHint() {
 /** Mahjong: user shuffles remaining tiles */
 export function trackShuffle() {
   track('shuffle', { game: 'mahjong' });
+}
+
+// ── Word Search ─────────────────────────────────────────────
+
+/** Word Search: user finds a word */
+export function trackWordFound(word: string, level: number) {
+  track('word_found', { game: 'wordsearch', word, level });
+}
+
+/** Word Search: user completes a level */
+export function trackLevelComplete(level: number, wordsFound: number, score: number, seconds: number) {
+  track('level_complete', { game: 'wordsearch', level, words_found: wordsFound, score, seconds });
+}
+
+/** Word Search: user advances to the next level */
+export function trackNextLevel(level: number) {
+  track('next_level', { game: 'wordsearch', level });
 }
 
 // ── Settings ─────────────────────────────────────────────────

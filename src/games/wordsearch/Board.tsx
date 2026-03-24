@@ -11,7 +11,7 @@ import { useInterstitialAd } from '../../components/AdInterstitial';
 import { useSettings } from '../../contexts/SettingsContext';
 import { useGameTimer } from '../../hooks/useGameTimer';
 import { useSound } from '../../hooks/useSound';
-import { trackNewGame, trackGameWon, trackUndo, trackOpenSettings, trackOpenHelp } from '../../utils/analytics';
+import { trackNewGame, trackGameWon, trackUndo, trackOpenSettings, trackOpenHelp, trackWordFound, trackLevelComplete, trackNextLevel } from '../../utils/analytics';
 import { saveBestScore } from '../../utils/highScores';
 import type { GridPosition } from './types';
 
@@ -46,9 +46,21 @@ export function Board({ onGoHome }: WordSearchBoardProps) {
   }, [undo]);
 
   const handleSelectionComplete = useCallback((positions: GridPosition[]) => {
+    const prevFound = state.foundWords.length;
     selectWord(positions);
+    // Track word found if a new word was matched (foundWords will update on next render,
+    // so we check by comparing with the grid words)
+    const posKey = positions.map(p => `${p.row},${p.col}`).join('|');
+    const matched = state.grid.words.find(w => {
+      const fwd = w.positions.map(p => `${p.row},${p.col}`).join('|');
+      const rev = [...w.positions].reverse().map(p => `${p.row},${p.col}`).join('|');
+      return (posKey === fwd || posKey === rev) && !state.foundWords.includes(w.word);
+    });
+    if (matched) {
+      trackWordFound(matched.word, state.currentLevel);
+    }
     play('cardPlace');
-  }, [selectWord, play]);
+  }, [selectWord, play, state.foundWords, state.grid.words, state.currentLevel]);
 
   const { dragSelection, handlePointerDown, gridRef } = useGridDrag({
     rows: state.grid.rows,
@@ -81,7 +93,8 @@ export function Board({ onGoHome }: WordSearchBoardProps) {
   if (state.hasWon && !hasTrackedWin.current) {
     hasTrackedWin.current = true;
     saveBestScore('wordsearch', { score: state.score, moves: state.moves, elapsedSeconds, date: Date.now() });
-    trackGameWon('wordsearch', state.moves, elapsedSeconds, state.score);
+    trackGameWon('wordsearch', state.moves, elapsedSeconds, state.score, { level: state.currentLevel });
+    trackLevelComplete(state.currentLevel, state.foundWords.length, state.score, elapsedSeconds);
   }
   if (!state.hasWon) hasTrackedWin.current = false;
 
@@ -222,7 +235,7 @@ export function Board({ onGoHome }: WordSearchBoardProps) {
               )}
               <button
                 className="bg-[#2e7d32] text-white border-none rounded-xl px-9 py-3.5 text-base font-semibold cursor-pointer transition-[background,transform] duration-200 hover:bg-[#388e3c] active:scale-[0.96]"
-                onClick={() => { nextLevel(); resetTimer(); }}
+                onClick={() => { trackNextLevel(state.currentLevel + 1); nextLevel(); resetTimer(); }}
               >
                 Next Level
               </button>
