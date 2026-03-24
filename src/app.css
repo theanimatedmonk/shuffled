@@ -82,6 +82,8 @@ body::before {
   flex-direction: column;
   min-height: 100vh;
   min-height: 100dvh;
+  /* Clear space for the fixed ad banner so it never overlaps content */
+  padding-bottom: var(--ad-banner-height, 50px);
 }
 
 /* --- 3D Card Flip System --- */
