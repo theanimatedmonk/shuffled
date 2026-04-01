@@ -39,32 +39,23 @@ export const FreeCellTableauPile = React.memo(function FreeCellTableauPile({
     );
   }
 
-  // Calculate offsets — all cards face up in FreeCell
-  let totalOffset = 0;
-  const offsets: number[] = [];
-  for (let i = 0; i < cards.length; i++) {
-    offsets.push(totalOffset);
-    if (i < cards.length - 1) {
-      totalOffset += getCssVarPx('--tableau-offset', 22);
-    }
-  }
-  const totalHeight = totalOffset + getCssVarPx('--card-height', 112);
-
   const isInSelectedStack = (i: number) =>
     selectedCard?.pileId === pileId && selectedCard.cardIndex <= i;
+
+  const lastIdx = cards.length - 1;
 
   return (
     <div
       className="relative w-[var(--card-width)]"
       data-pile-id={pileId}
-      style={{ height: totalHeight }}
+      style={{ height: `calc(${lastIdx} * var(--tableau-offset) + var(--card-height))` }}
     >
       {cards.map((card, i) => (
         <CardComponent
           key={card.id}
           card={card}
           style={{
-            top: offsets[i],
+            top: `calc(${i} * var(--tableau-offset))`,
             left: 0,
             zIndex: i + 1,
           }}
@@ -79,17 +70,3 @@ export const FreeCellTableauPile = React.memo(function FreeCellTableauPile({
   );
 });
 
-function getCssVarPx(name: string, fallback: number): number {
-  if (typeof document === 'undefined') return fallback;
-  // CSS custom properties return raw expressions (e.g. clamp(...)) from getComputedStyle.
-  // To resolve to pixels, temporarily apply the var to a real property on a hidden element.
-  const el = document.querySelector('.freecell-game') ?? document.documentElement;
-  const probe = document.createElement('div');
-  probe.style.position = 'absolute';
-  probe.style.visibility = 'hidden';
-  probe.style.height = `var(${name})`;
-  el.appendChild(probe);
-  const px = probe.getBoundingClientRect().height;
-  probe.remove();
-  return px || fallback;
-}
