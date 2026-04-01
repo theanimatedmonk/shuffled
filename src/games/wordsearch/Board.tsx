@@ -113,7 +113,6 @@ export function Board({ onGoHome }: WordSearchBoardProps) {
   return (
     <div className="wordsearch-game flex-1 flex flex-col">
       <TopBar
-        moves={state.moves}
         score={state.score}
         timerDisplay={settings.timerEnabled ? formattedTime : undefined}
         canAutoComplete={false}

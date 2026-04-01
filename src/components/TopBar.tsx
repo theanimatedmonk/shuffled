@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 
 interface TopBarProps {
-  moves: number;
+  moves?: number;
   score: number;
   timerDisplay?: string;
   canAutoComplete: boolean;
@@ -111,16 +111,18 @@ export const TopBar = React.memo(function TopBar({
               fontSize: 'clamp(12px, 2.8vw, 14px)',
             }}
           >
-            <span
-              className="flex items-center gap-0.5 cursor-default"
-              title="Moves"
-              onClick={() => showToast(`Moves: ${moves}`)}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-50" style={{ width: 'clamp(12px, 2.5vw, 14px)', height: 'clamp(12px, 2.5vw, 14px)' }}>
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-              </svg>
-              {moves}
-            </span>
+            {moves != null && (
+              <span
+                className="flex items-center gap-0.5 cursor-default"
+                title="Moves"
+                onClick={() => showToast(`Moves: ${moves}`)}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-50" style={{ width: 'clamp(12px, 2.5vw, 14px)', height: 'clamp(12px, 2.5vw, 14px)' }}>
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+                {moves}
+              </span>
+            )}
             <span
               className="flex items-center gap-0.5 cursor-default"
               title="Score"
