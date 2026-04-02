@@ -108,8 +108,6 @@ export function Board({ onGoHome }: WordSearchBoardProps) {
     return () => { clearInterval(interval); clearTimeout(timeout); };
   }, [state.hasWon]);
 
-  const wordsRemaining = state.grid.words.length - state.foundWords.length;
-
   return (
     <div className="wordsearch-game flex-1 flex flex-col">
       <TopBar
