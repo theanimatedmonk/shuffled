@@ -1,0 +1,282 @@
+/* Gradient "border": browsers can't use linear-gradient() as border/outline color.
+   Stack two backgrounds — inner clip = fill, outer clip = 1px ring (via transparent border). */
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  text-align: left;
+  border: 1px solid transparent;
+  border-radius: 1.5rem;
+  background:
+    linear-gradient(165deg, #1c1c1e 0%, #0a0a0b 55%, #121912 100%) padding-box,
+    linear-gradient(90deg, #353534 12.58%, #DEC378 48.14%, #353534 94.77%) border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 0 12px 20px 0 rgba(255, 211, 99, 0.20) inset, 0 4px 12px 0 rgba(0, 0, 0, 0.50);
+  cursor: default;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: scale(1.02);
+  box-shadow:
+    0 12px 20px 0 rgba(255, 211, 99, 0.26) inset,
+    0 4px 12px 0 rgba(0, 0, 0, 0.50),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.card:active {
+  transform: scale(0.98);
+}
+
+/* —— Layout variants (colors / shadows unchanged on base selectors) —— */
+
+.variantHero {
+  grid-column: span 2;
+}
+
+.variantMedium {
+  grid-column: span 2;
+}
+
+.variantSmall .body {
+  padding: 8px 16px 16px 16px;
+}
+
+.variantMedium .body {
+  padding: 10px 20px 20px 20px;
+}
+
+.variantMedium .playBtnCompact {
+  min-width: clamp(96px, 26vw, 132px);
+}
+
+.media {
+  width: 100%;
+  border-radius: 0;
+  overflow: visible;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.mediaHero {
+  height: clamp(140px, 36vw, 200px);
+}
+
+.mediaSmall {
+  height: clamp(72px, 18vw, 96px);
+}
+
+.mediaMedium {
+  height: clamp(100px, 24vw, 140px);
+}
+
+.media:focus-visible {
+  outline: 2px solid rgba(230, 200, 120, 0.6);
+  outline-offset: 2px;
+}
+
+.previewImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 0;
+}
+
+.previewCustom {
+  width: 100%;
+  height: 100%;
+  background: #1b5e20;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px 6px 8px;
+  box-sizing: border-box;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: 8px 20px 20px 20px;
+  gap: clamp(4px, 1.2vw, 8px);
+}
+
+.bodyHero {
+  align-items: center;
+  text-align: center;
+}
+
+.bodyCompact {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.footerRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: clamp(4px, 1vw, 8px);
+  gap: clamp(8px, 2vw, 12px);
+}
+
+.title {
+  margin: 0;
+  font-weight: 800;
+  color: #f5f5f7;
+}
+
+/* Hero: larger display title, centered context */
+.titleHero {
+  margin-top: clamp(8px, 2vw, 14px);
+  font-size: clamp(18px, 4.5vw, 24px);
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+/* Compact (small + medium): tighter, left-aligned grid */
+.titleCompact {
+  margin-top: clamp(4px, 1.2vw, 8px);
+  font-size: clamp(12px, 3.1vw, 17px);
+  line-height: 1.22;
+  letter-spacing: -0.02em;
+}
+
+.variantMedium .titleCompact {
+  font-size: clamp(13px, 3.3vw, 18px);
+  margin-top: clamp(5px, 1.4vw, 10px);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: clamp(9px, 2.1vw, 11px);
+  color: rgba(255, 255, 255, 0.42);
+  line-height: 1.35;
+  max-width: 100%;
+}
+
+.best {
+  margin: 0;
+  font-size: clamp(9px, 2vw, 11px);
+  font-weight: 600;
+  color: #f57f17;
+}
+
+.playBtn {
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  padding: clamp(9px, 2.4vw, 12px) clamp(14px, 3vw, 18px);
+  font-size: clamp(11px, 2.6vw, 16px);
+  font-weight: 700;
+  font-family: inherit;
+  color: #fff;
+  cursor: pointer;
+  background:
+    linear-gradient(180deg, #428e0d 0%, #386845 100%) padding-box,
+    linear-gradient(90deg, #3C702A 22.73%, #C4FFB1 50.73%, #3C702A 75.61%) border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 0 1px 21.4px 0 rgba(117, 247, 72, 0.20), 0 -3px 4px 0 rgba(0, 0, 0, 0.50) 
+  inset, 0 4px 4px 0 rgba(255, 255, 255, 0.50) inset;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.playBtn:hover {
+  filter: brightness(1.06);
+}
+
+.playBtn:active {
+  transform: scale(0.98);
+}
+
+.playBtn:focus-visible {
+  outline: 2px solid rgba(200, 230, 200, 0.9);
+  outline-offset: 2px;
+}
+
+.playBtnHero {
+  margin-top: clamp(4px, 1vw, 8px);
+  width: 100%;
+}
+
+.playBtnCompact {
+  margin-top: 0;
+  width: auto;
+  flex-shrink: 0;
+  font-size: 12px;
+  padding: 8px 16px;
+}
+
+.howTo {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-weight: 600;
+  color: #c5b896;
+  cursor: pointer;
+  text-decoration: none;
+  text-underline-offset: 2px;
+  transition: color 0.15s ease;
+}
+
+/* Hero: larger tap target, more legible under primary CTA */
+.howToHero {
+  align-self: center;
+  justify-content: center;
+  gap: 8px;
+  padding: clamp(6px, 1.6vw, 10px) clamp(12px, 3vw, 16px);
+  font-size: clamp(11px, 2.7vw, 14px);
+  letter-spacing: 0.02em;
+}
+
+.howToHero .howToIcon {
+  font-size: 1.22em;
+}
+
+/* Compact: fits footer row next to Play */
+.howToCompact {
+  justify-content: flex-start;
+  gap: 5px;
+  padding: 4px 4px 4px 0;
+  font-size: clamp(9px, 2.1vw, 11px);
+  letter-spacing: 0.01em;
+}
+
+.howToCompact .howToIcon {
+  font-size: 1.08em;
+}
+
+.variantMedium .howToCompact {
+  font-size: clamp(10px, 2.3vw, 12px);
+  gap: 6px;
+  padding: 4px 6px 4px 0;
+}
+
+.variantMedium .howToCompact .howToIcon {
+  font-size: 1.12em;
+}
+
+.howTo:hover {
+  color: #e8dcc8;
+  text-decoration: underline;
+  text-decoration-color: rgba(197, 184, 150, 0.4);
+}
+
+.howTo:focus-visible {
+  outline: 2px solid rgba(197, 184, 150, 0.5);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.howToIcon {
+  flex-shrink: 0;
+  line-height: 1;
+}

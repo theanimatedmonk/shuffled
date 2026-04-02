@@ -48,7 +48,7 @@ html, body, #root {
 }
 
 body {
-  background: radial-gradient(ellipse at center, #2e7d32 0%, #1b5e20 60%, #0d3010 100%);
+  background: radial-gradient(60.25% 50% at 50% 50%, #1C3623 0%, #000 74.13%);;
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

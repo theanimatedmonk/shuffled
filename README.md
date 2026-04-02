@@ -1,5 +1,7 @@
 # React + TypeScript + Vite
 
+Fork workflow and syncing with upstream: see **[CONTRIBUTING.md](./CONTRIBUTING.md)**.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

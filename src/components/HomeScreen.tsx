@@ -1,40 +1,45 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import type { GameType } from '../types';
 import { HowToPlayModal } from './HowToPlayModal';
 import { trackOpenHelp } from '../utils/analytics';
 import { getBestScore } from '../utils/highScores';
 import { ENABLED_GAMES } from '../config/enabledGames';
+import { GameCard, type GameCardVariant } from './card/card';
 
 interface HomeScreenProps {
   onSelectGame: (game: GameType) => void;
 }
 
-const GAMES: { type: GameType; name: string; description: string; preview?: React.ReactNode }[] = [
+const GAMES: { type: GameType; name: string; description: string; variant: GameCardVariant }[] = [
   {
     type: 'klondike',
     name: 'Classic Solitaire',
     description: 'The classic solitaire card game',
+    variant: 'hero',
   },
   {
     type: 'freecell',
     name: 'FreeCell',
     description: 'Use free cells strategically to win',
+    variant: 'small',
   },
   {
     type: 'spider',
     name: 'Spider Solitaire',
     description: 'Build suit runs with two decks',
+    variant: 'small',
   },
   {
     type: 'mahjong',
     name: 'Mahjong',
     description: 'Match pairs of free tiles',
+    variant: 'small',
   },
   {
     type: 'wordsearch',
     name: 'Word Search',
     description: 'Find hidden words in the grid',
-    preview: <WordSearchPreview />,
+    variant: 'medium',
   },
 ];
 
@@ -87,7 +92,7 @@ export function HomeScreen({ onSelectGame }: HomeScreenProps) {
           Shuffled
         </h1>
         <p className="text-white/45 m-0 tracking-wide uppercase font-medium" style={{ fontSize: 'clamp(9px, 2.2vw, 12px)', letterSpacing: '2.5px', marginTop: '2px' }}>
-          Your favorite card games
+          Your favorite card and word games
         </p>
       </div>
 
@@ -104,77 +109,22 @@ export function HomeScreen({ onSelectGame }: HomeScreenProps) {
           const best = getBestScore(game.type);
 
           return (
-            <button
+            <GameCard
               key={game.type}
-              className="win-card-bg rounded-2xl border-none cursor-pointer text-left transition-[transform,box-shadow] duration-200 hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(0,0,0,0.25)] active:scale-[0.98] flex flex-col"
-              style={{ padding: 'clamp(10px, 2.5vw, 16px)' }}
-              onClick={() => onSelectGame(game.type)}
-            >
-              {/* Preview */}
-              <div
-                className="w-full rounded-lg overflow-hidden"
-                style={{ height: 'clamp(85px, 22vw, 130px)' }}
-              >
-                {game.preview ? (
-                  <div className="w-full h-full bg-[#1b5e20] flex items-end justify-center" style={{ padding: '16px 6px 8px' }}>
-                    {game.preview}
-                  </div>
-                ) : (
-                  <img
-                    src={`/previews/${game.type}.png`}
-                    alt={game.name}
-                    className="w-full h-full object-cover object-top"
-                    loading="lazy"
-                  />
-                )}
-              </div>
-
-              {/* Text content */}
-              <h3
-                className="font-bold text-[#2e7d32] m-0"
-                style={{ fontSize: 'clamp(12px, 3vw, 15px)', marginTop: 'clamp(6px, 1.5vw, 10px)' }}
-              >
-                {game.name}
-              </h3>
-              <p
-                className="text-[#888] m-0 leading-snug"
-                style={{ fontSize: 'clamp(9px, 2vw, 11px)', marginTop: '2px' }}
-              >
-                {game.description}
-              </p>
-              {best && (
-                <p
-                  className="text-[#F57F17] m-0 font-semibold"
-                  style={{ fontSize: 'clamp(9px, 2vw, 11px)', marginTop: '3px' }}
-                >
-                  Best: {best.score}
-                </p>
-              )}
-
-              {/* Bottom row */}
-              <div className="flex items-center justify-between" style={{ marginTop: 'clamp(6px, 1.5vw, 10px)' }}>
-                <span
-                  className="text-[#2e7d32]/70 hover:text-[#2e7d32] transition-colors underline decoration-[#2e7d32]/30"
-                  style={{ fontSize: 'clamp(9px, 2vw, 11px)' }}
-                  onClick={(e) => { e.stopPropagation(); trackOpenHelp(game.type); setHelpGame(game.type); }}
-                >
-                  How to play
-                </span>
-                <div
-                  className={`shrink-0 rounded-full font-semibold whitespace-nowrap ${
-                    hasSave
-                      ? 'bg-[#FFC107]/20 text-[#F57F17]'
-                      : 'bg-[#2e7d32]/10 text-[#2e7d32]'
-                  }`}
-                  style={{
-                    padding: 'clamp(2px, 0.6vw, 4px) clamp(8px, 2vw, 12px)',
-                    fontSize: 'clamp(9px, 2vw, 11px)',
-                  }}
-                >
-                  {hasSave ? 'Continue' : 'Play'}
-                </div>
-              </div>
-            </button>
+              variant={game.variant}
+              title={game.name}
+              subtitle={game.description}
+              imageSrc={`/previews/${game.type}.png`}
+              imageAlt={game.name}
+              playLabel={hasSave ? 'Continue' : 'Play now'}
+              bestScore={best?.score}
+              onPlay={() => onSelectGame(game.type)}
+              onHowToPlay={(e) => {
+                e.preventDefault();
+                trackOpenHelp(game.type);
+                setHelpGame(game.type);
+              }}
+            />
           );
         })}
       </div>
@@ -193,28 +143,3 @@ function hasSavedGame(game: GameType): boolean {
     return false;
   }
 }
-
-// ── Mini Previews ─────────────────────────────────────────────
-
-function WordSearchPreview() {
-  const letters = ['F', 'I', 'N', 'D', 'W', 'O', 'R', 'D', 'S'];
-  return (
-    <div className="grid grid-cols-3 gap-[2px]">
-      {letters.map((l, i) => (
-        <div
-          key={i}
-          className="flex items-center justify-center font-bold text-white/90 rounded-[2px]"
-          style={{
-            width: 'clamp(14px, 3.5vw, 20px)',
-            height: 'clamp(14px, 3.5vw, 20px)',
-            fontSize: 'clamp(8px, 2vw, 11px)',
-            background: [0, 1, 2, 3].includes(i) ? 'rgba(76,175,80,0.7)' : 'rgba(255,255,255,0.15)',
-          }}
-        >
-          {l}
-        </div>
-      ))}
-    </div>
-  );
-}
-
